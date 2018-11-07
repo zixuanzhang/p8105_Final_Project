@@ -5,6 +5,8 @@ Final Project Proposal
 Group Member
 ------------
 
+Jiayi Shen (UNI: js5354)
+
 Project Title
 -------------
 

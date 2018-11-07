@@ -5,7 +5,7 @@ output: github_document
 ---
 
 ## Group Member
-
+  Jiayi Shen (UNI: js5354)  
 
 
 ## Project Title
