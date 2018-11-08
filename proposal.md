@@ -9,6 +9,7 @@ Group Member
 -   Shan Jiang(UNI: sj2921)
 -   Jie Yu (jy2944)
 -   Eleanor Zhang(zz2602)
+-   Guojing Wu (gw2383)
 
 Project Title
 -------------
