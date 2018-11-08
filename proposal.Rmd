@@ -5,8 +5,9 @@ output: github_document
 ---
 
 ## Group Member
-  Jiayi Shen (UNI: js5354)
-  Shan Jiang(UNI: sj2921)
+  * Jiayi Shen (UNI: js5354)
+  * Shan Jiang(UNI: sj2921)
+  * Jie Yu (jy2944)
   
 
 
@@ -20,7 +21,8 @@ Where you are going: Analysis of Data Science Job Outlook of United States Labor
 
 ## Intended Final Product
 
-
+* Graph
+* Tables 
 
 ## Anticipated Data Source
 
