@@ -26,8 +26,11 @@ Given that graduate students entering into the job market with bachelor, master,
 
 ## Intended Final Product
 #### Part I Background and Introduction 
-* Two datasets: one for background check of the job market dynamics for the past decade.  
-* Graph 1: Computer and mathematic occupations trend from 2003 to 2018
+Background check of the job market dynamics for the past decade:
+
+* Graph 1: Computer and mathematical occupations trend from 2007 to 2017
+
+* Graph 2: Comparison of average annual wage estimates for  computer and mathematical occupations and that across all industries between 2007 and 2017.
  
 
 #### Part II 
