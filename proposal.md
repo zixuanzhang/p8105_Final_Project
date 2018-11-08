@@ -22,6 +22,8 @@ Anticipated Dataset:
 
 -   [Data Scientist Job Posts in the U.S on Indeed Website in 2018 August](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)
 
+-   [The 500 Largest Industrial Corporations in the U.S., Published by Fortune magazine (updated by October 5, 2018)](https://catalog.data.gov/dataset/fortune-500-corporate-headquarters)
+
 Motivation
 ----------
 
