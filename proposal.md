@@ -19,6 +19,10 @@ Where you are going: Analysis of Data Science Job Outlook of United States Labor
 Motivation
 ----------
 
+According to [the 2018 August Linkedin Workforce Report](https://economicgraph.linkedin.com/resources/linkedin-workforce-report-august-2018), there is a rising demand of work forces with data science skills across industries in United States. As more institutions and industry sectors rely on big data to make operations and decisions, the national shortage of data scientists has been reported to be 151,717. Some regions are in acute shortage of workforce in data science such as New York city, San Francisco and Los Angeles, etc.
+
+Given that graduate students entering into the job market with bachelor, master, or PhD degree are actively seeking jobs locally or nationwide, we want to utilize the 7000 job posting information scraped from [Indeed](https://www.indeed.com/jobs?q=data+science&start=10) in order to investigate the data science job market in U.S. Particularly, we are interested in areas with job opportunities, what skills employers are looking for, and different qualifications and requirements for different types of job titles . We are hoping these exploratory analysis will help students better taylor at their skill building and job hunting in the future.
+
 Intended Final Product
 ----------------------
 
@@ -67,9 +71,11 @@ Anticipated Data Source
 Challenges
 ----------
 
-1.  text mining: for acquiring a clean set of description, we need to extract some keywords which describes the skills, tools and education requirements in our dataset.
+1.  Text mining: The job description part of the original dataset contains substantial information. We need to determine some keywords which describe the skills, tools, education requirements and working years, respectively, in order to acquire a clean set of variables for further analysis.
 
-2.  Job title classification: Mark the levels of different titles in different companies, data scientist may not be of the same level when companies are of different sizes or different internal governance structure (listed company for example).
+2.  Job title classification: Mark the levels of different titles in different companies. Data scientist may not be of the same level when companies are of different sizes or different internal governance structure.
+
+Companies of different sizes and internal governance structure give different job titles for data science employees. We need to identify all the possible job titles from the original dataset and classify them to the three general categories: data engineer, data scientist, and data analyst.
 
 Planned Timeline
 ----------------
