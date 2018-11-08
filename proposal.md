@@ -71,11 +71,13 @@ Anticipated Data Source
 Challenges
 ----------
 
-1.  Text mining: The job description part of the original dataset contains substantial information. We need to determine some keywords which describe the skills, tools, education requirements and working years, respectively, in order to acquire a clean set of variables for further analysis.
-
-2.  Job title classification: Mark the levels of different titles in different companies. Data scientist may not be of the same level when companies are of different sizes or different internal governance structure.
-
-Companies of different sizes and internal governance structure give different job titles for data science employees. We need to identify all the possible job titles from the original dataset and classify them to the three general categories: data engineer, data scientist, and data analyst.
+1.  Data Tidying:
+    1.  detect key strings in the job descriptions.
+    2.  Reduce redundancy
+    3.  Deal with missing value
+    4.  Classification of job titles
+2.  Final product
+    1.  Matching statistical analysis result to the map
 
 Planned Timeline
 ----------------
