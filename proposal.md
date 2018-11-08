@@ -34,33 +34,30 @@ Background check of the job market dynamics for the past decade:
 
 -   Graph : Comparison of average annual wage estimates for computer and mathematical occupations and that across all industries between 2007 and 2017.
 
-#### Part II
+#### Part II Core Analysis (focus on data science field)
 
--   Descriptive Part:
+##### Geographical Visualization
 
-1.  Geographical Visualization
-
--   Graph : (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
+-   Graph (a bubble map) : Which regions are in high demand of labor with data science skills?
 
 -   Potential suggestions for new graduates: local shortages for data science skills, will this cause a migration?
 
-1.  Skills:
+##### Descriptive Part
 
-what kind of data science skills are in need?(from job description)
+-   Degree preference and major preference?
 
--   Top 5 skills; Top 5 tools;
--   Most-desired degree;
--   Most-desired majors;
+-   Degree preference and major preference?
 
-##### Graphs:
+-   What programming / statistical tools are most required?
 
--   Graphs : Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Degrees and Majors;
+-   What kinds of data science skills are most in need? (data analysis, machine learning, data visualization, etc.)
 
--   Graphs : Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most popular tools
+-   Comparisons among job titles -- Data Engineer vs. Data Scientist vs. Data Analyst 1)Degree and majors
+    2)Required tools
+    3)Required skills
+    4)Years of experiences
 
--   Graphs : Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most concerntrated areas;
-
--   Graphs : global-500 companies requirements / other companies requirements comparison?
+-   Comparison of requirements between 500 largest industrial corporations in U.S. and other companies.
 
 Anticipated Data Source
 -----------------------
