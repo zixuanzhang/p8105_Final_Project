@@ -76,3 +76,11 @@ Challenges
 
 Planned Timeline
 ----------------
+
+| Scheduled Tasks                   | Due dates                 |
+|-----------------------------------|---------------------------|
+| Scrape data and tidy              | Nov. 16 (Friday)          |
+| Analyse and produce visualization | Nov. 23 (Friday)          |
+| Draft report                      | Nov. 30 (Friday)          |
+| Make webpage and screencast       | Dec. 4 (Tuesday)          |
+| Final editing                     | Dec. 6 (Friday by 4 p.m.) |
