@@ -30,9 +30,9 @@ Intended Final Product
 
 Background check of the job market dynamics for the past decade:
 
--   Graph 1: Computer and mathematical occupations trend from 2007 to 2017
+-   Graph : Computer and mathematical occupations trend from 2007 to 2017
 
--   Graph 2: Comparison of average annual wage estimates for computer and mathematical occupations and that across all industries between 2007 and 2017.
+-   Graph : Comparison of average annual wage estimates for computer and mathematical occupations and that across all industries between 2007 and 2017.
 
 #### Part II
 
@@ -40,11 +40,13 @@ Background check of the job market dynamics for the past decade:
 
 1.  Geographical Visualization
 
--   Graph 2: (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
+-   Graph : (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
 
--   Potential suggestions for new graduates: local shortages for data science skills, will this cause a migration or
+-   Potential suggestions for new graduates: local shortages for data science skills, will this cause a migration?
 
-1.  Skills: what kind of data science skills are in need?(from job description)
+1.  Skills:
+
+what kind of data science skills are in need?(from job description)
 
 -   Top 5 skills; Top 5 tools;
 -   Most-desired degree;
@@ -52,13 +54,13 @@ Background check of the job market dynamics for the past decade:
 
 ##### Graphs:
 
--   Graphs 3. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Degrees and Majors;
+-   Graphs : Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Degrees and Majors;
 
--   Graphs 4. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most popular tools
+-   Graphs : Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most popular tools
 
--   Graphs 5. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most concerntrated areas;
+-   Graphs : Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most concerntrated areas;
 
--   Graphs 6. global-500 companies requirements / other companies requirements comparison?
+-   Graphs : global-500 companies requirements / other companies requirements comparison?
 
 Anticipated Data Source
 -----------------------
