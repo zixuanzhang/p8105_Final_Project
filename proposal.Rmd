@@ -70,14 +70,14 @@ Background check of the job market dynamics for the past decade:
 
 ## Challenges
 
-1. Data Tidying:
-    i) detect key strings in the job descriptions.
-    ii) Reduce redundancy
-    iii) Deal with missing value
-    iiii) Classification of job titles
+* Data Tidying:
+    + detect key strings in the job descriptions.
+    + Reduce redundancy
+    + Deal with missing value
+    + Classification of job titles
  
-2. Final product
-    i) Matching statistical analysis result to the map
+* Final product
+    + Matching statistical analysis result to the map
 
 
 ## Planned Timeline
