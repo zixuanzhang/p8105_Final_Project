@@ -5,10 +5,10 @@ Final Project Proposal
 Group Member
 ------------
 
--   Jiayi Shen (UNI: js5354)
--   Shan Jiang(UNI: sj2921)
+-   Jiayi Shen (js5354)
+-   Shan Jiang (sj2921)
 -   Jie Yu (jy2944)
--   Eleanor Zhang(zz2602)
+-   Eleanor Zhang (zz2602)
 -   Guojing Wu (gw2383)
 
 Project Title
