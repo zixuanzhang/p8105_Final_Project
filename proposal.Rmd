@@ -8,6 +8,7 @@ output: github_document
   * Jiayi Shen (UNI: js5354)
   * Shan Jiang(UNI: sj2921)
   * Jie Yu (jy2944)
+  * Eleanor Zhang(zz2602)
   
 
 
@@ -20,9 +21,11 @@ Where you are going: Analysis of Data Science Job Outlook of United States Labor
 
 
 ## Intended Final Product
+* Part I Background and Introduction 
+* Two datasets: one for background check of the job market dynamics for the past decade.  
+* Graph 1: Computer and mathematic occupations trend from 2003 to 2018
 
-* Graph
-* Tables 
+* Graph 2: 
 
 ## Anticipated Data Source
 

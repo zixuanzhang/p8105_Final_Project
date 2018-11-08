@@ -2,25 +2,33 @@ Final Project Proposal
 ================
 2018-11-07
 
-Group Member
-------------
+## Group Member
 
-Jiayi Shen (UNI: js5354)
+  - Jiayi Shen (UNI: js5354)
+  - Shan Jiang(UNI: sj2921)
+  - Jie Yu (jy2944)
+  - Eleanor Zhang(zz2602)
 
-Project Title
--------------
+## Project Title
 
-Motivation
-----------
+Where you are going: Analysis of Data Science Job Outlook of United
+States Labor Market in 2018.
 
-Intended Final Product
-----------------------
+## Motivation
 
-Anticipated Data Source
------------------------
+## Intended Final Product
 
-Challenges
-----------
+  - Part I Background and Introduction
 
-Planned Timeline
-----------------
+  - Two datasets: one for background check of the job market dynamics
+    for the past decade.  
+
+  - Graph 1: Computer and mathematic occupations trend from 2003 to 2018
+
+  - Graph 2:
+
+## Anticipated Data Source
+
+## Challenges
+
+## Planned Timeline
