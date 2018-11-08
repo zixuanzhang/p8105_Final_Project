@@ -46,13 +46,12 @@ read_indeed_pages <- function(url) {
   html_nodes(".summary") %>% 
   html_text() 
 
+  reviews <- h %>% 
+  html_nodes(".slNoUnderline .slNoUnderline") %>% 
+  html_text() %>% 
+  readr::parse_number()
   
-  #reviews <- h %>% 
-  #html_nodes(".slNoUnderline .slNoUnderline") %>% 
-  #html_text() %>% 
-  #readr::parse_number()
-  
-  tibble(title, company, location, description)
+  tibble(title, company, location, description, reviews)
 }
 ```
 
@@ -60,11 +59,16 @@ try reviews (problem: cannot fit in missing values, some job posting do not have
 
 ```{r}
 h <- read_html("https://www.indeed.com/jobs?q=data+science&explvl=entry_level")
- 
+
+# grab reviews
 h %>% 
   html_nodes(".slNoUnderline .slNoUnderline") %>% 
   html_text() %>% 
   readr::parse_number()
+
+# grab ratings
+h %>% 
+  html_nodes(".rating")
 ```
 
 try the function of scraping data (raw data not tidy yet)
