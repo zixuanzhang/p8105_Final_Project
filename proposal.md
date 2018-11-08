@@ -72,13 +72,13 @@ Anticipated Data Source
 Challenges
 ----------
 
-1.  Data Tidying:
-    1.  detect key strings in the job descriptions.
-    2.  Reduce redundancy
-    3.  Deal with missing value
-    4.  Classification of job titles
-2.  Final product
-    1.  Matching statistical analysis result to the map
+-   Data Tidying:
+    -   detect key strings in the job descriptions.
+    -   Reduce redundancy
+    -   Deal with missing value
+    -   Classification of job titles
+-   Final product
+    -   Matching statistical analysis result to the map
 
 Planned Timeline
 ----------------
