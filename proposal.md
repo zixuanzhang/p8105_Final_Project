@@ -14,6 +14,8 @@ Final Project Proposal
 Where you are going: Analysis of Data Science Job Outlook of United
 States Labor Market in 2018.
 
+Data used:
+
 ## Motivation
 
 ## Intended Final Product
@@ -30,9 +32,12 @@ States Labor Market in 2018.
 
 <!-- end list -->
 
-1.  Geographical Visualization Which regions are in high demand of labor
-    with data science skills? the distribution of job offers across
-    different industry/companies and cities in US.
+1.  Geographical Visualization
+
+<!-- end list -->
+
+1)    - Graph 2: (map of us/potentially a bubble map) Which regions are
+        in high demand of labor with data science skills?
 
 <!-- end list -->
 
@@ -41,13 +46,40 @@ States Labor Market in 2018.
 
 <!-- end list -->
 
-2.  
+2.  Skills: what kind of data science skills are in need?(from job
+    description)
+
 <!-- end list -->
 
-  - Graph 2:
+  - Top 5 skills; Top 5 tools;
+  - Most-desired degree;
+  - Most-desired majors;
+
+##### Graphs:
+
+  - Graphs 3. Compare 3 groups: Engineer vs. Data Scientist vs. Data
+    Analyst, Degrees and Majors;
+
+  - Graphs 4. Compare 3 groups: Engineer vs. Data Scientist vs. Data
+    Analyst, Most popular tools
+
+  - Graphs 5. Compare 3 groups: Engineer vs. Data Scientist vs. Data
+    Analyst, Most concerntrated areas;
+
+  - Graphs 6. global-500 companies requirements / other companies
+    requirements comparison?
 
 ## Anticipated Data Source
 
 ## Challenges
+
+1.  text mining: for acquiring a clean set of description, we need to
+    extract some keywords which describes the skills, tools and
+    education requirements in our dataset.
+
+2.  Job title classification: Mark the levels of different titles in
+    different companies, data scientist may not be of the same level
+    when companies are of different sizes or different internal
+    governance structure (listed company for example).
 
 ## Planned Timeline
