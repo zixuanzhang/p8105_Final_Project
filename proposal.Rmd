@@ -15,8 +15,11 @@ output: github_document
 ## Project Title
 Where you are going: Analysis of Data Science Job Outlook of United States Labor Market in 2018. 
 
-Data used: 
+## Anticipated Dataset: 
 
+* [National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics (using data covering 2007 until 2017)](https://www.bls.gov/oes/tables.htm)
+
+* [Data Scientist Job Posts in the U.S on Indeed Website in 2018 August](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)
 
 
 ## Motivation

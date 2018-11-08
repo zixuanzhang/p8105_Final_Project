@@ -2,84 +2,74 @@ Final Project Proposal
 ================
 2018-11-07
 
-## Group Member
+Group Member
+------------
 
-  - Jiayi Shen (UNI: js5354)
-  - Shan Jiang(UNI: sj2921)
-  - Jie Yu (jy2944)
-  - Eleanor Zhang(zz2602)
+-   Jiayi Shen (UNI: js5354)
+-   Shan Jiang(UNI: sj2921)
+-   Jie Yu (jy2944)
+-   Eleanor Zhang(zz2602)
 
-## Project Title
+Project Title
+-------------
 
-Where you are going: Analysis of Data Science Job Outlook of United
-States Labor Market in 2018.
+Where you are going: Analysis of Data Science Job Outlook of United States Labor Market in 2018.
 
-Data used:
+Anticipated Dataset:
+--------------------
 
-## Motivation
+-   [National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics (using data covering 2007 until 2017)](https://www.bls.gov/oes/tables.htm)
 
-## Intended Final Product
+-   [Data Scientist Job Posts in the U.S on Indeed Website in 2018 August](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)
+
+Motivation
+----------
+
+Intended Final Product
+----------------------
 
 #### Part I Background and Introduction
 
-  - Two datasets: one for background check of the job market dynamics
-    for the past decade.  
-  - Graph 1: Computer and mathematic occupations trend from 2003 to 2018
+-   Two datasets: one for background check of the job market dynamics for the past decade.
+-   Graph 1: Computer and mathematic occupations trend from 2003 to 2018
 
 #### Part II
 
-  - Descriptive Part:
-
-<!-- end list -->
+-   Descriptive Part:
 
 1.  Geographical Visualization
 
-<!-- end list -->
+<!-- -->
 
-1)    - Graph 2: (map of us/potentially a bubble map) Which regions are
-        in high demand of labor with data science skills?
+1.  -   Graph 2: (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
 
-<!-- end list -->
+-   Potential suggestions for new graduates: local shortages for data science skills, will this cause a migration or
 
-  - Potential suggestions for new graduates: local shortages for data
-    science skills, will this cause a migration or
+1.  Skills: what kind of data science skills are in need?(from job description)
 
-<!-- end list -->
-
-2.  Skills: what kind of data science skills are in need?(from job
-    description)
-
-<!-- end list -->
-
-  - Top 5 skills; Top 5 tools;
-  - Most-desired degree;
-  - Most-desired majors;
+-   Top 5 skills; Top 5 tools;
+-   Most-desired degree;
+-   Most-desired majors;
 
 ##### Graphs:
 
-  - Graphs 3. Compare 3 groups: Engineer vs. Data Scientist vs. Data
-    Analyst, Degrees and Majors;
+-   Graphs 3. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Degrees and Majors;
 
-  - Graphs 4. Compare 3 groups: Engineer vs. Data Scientist vs. Data
-    Analyst, Most popular tools
+-   Graphs 4. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most popular tools
 
-  - Graphs 5. Compare 3 groups: Engineer vs. Data Scientist vs. Data
-    Analyst, Most concerntrated areas;
+-   Graphs 5. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most concerntrated areas;
 
-  - Graphs 6. global-500 companies requirements / other companies
-    requirements comparison?
+-   Graphs 6. global-500 companies requirements / other companies requirements comparison?
 
-## Anticipated Data Source
+Anticipated Data Source
+-----------------------
 
-## Challenges
+Challenges
+----------
 
-1.  text mining: for acquiring a clean set of description, we need to
-    extract some keywords which describes the skills, tools and
-    education requirements in our dataset.
+1.  text mining: for acquiring a clean set of description, we need to extract some keywords which describes the skills, tools and education requirements in our dataset.
 
-2.  Job title classification: Mark the levels of different titles in
-    different companies, data scientist may not be of the same level
-    when companies are of different sizes or different internal
-    governance structure (listed company for example).
+2.  Job title classification: Mark the levels of different titles in different companies, data scientist may not be of the same level when companies are of different sizes or different internal governance structure (listed company for example).
 
-## Planned Timeline
+Planned Timeline
+----------------
