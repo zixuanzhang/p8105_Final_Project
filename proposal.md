@@ -52,7 +52,7 @@ Background check of the job market dynamics for the past decade:
 
 -   What kinds of data science skills are most in need? (data analysis, machine learning, data visualization, etc.)
 
--   Comparisons among job titles -- Data Engineer vs. Data Scientist vs. Data Analyst
+-   Comparisons among job titles -- Data Engineer vs. Data Scientist vs. Data Analyst:
     1)Degree and majors
     2)Required tools
     3)Required skills
