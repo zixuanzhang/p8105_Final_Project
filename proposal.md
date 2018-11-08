@@ -40,9 +40,7 @@ Background check of the job market dynamics for the past decade:
 
 1.  Geographical Visualization
 
-<!-- -->
-
-1.  -   Graph 2: (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
+-   Graph 2: (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
 
 -   Potential suggestions for new graduates: local shortages for data science skills, will this cause a migration or
 
