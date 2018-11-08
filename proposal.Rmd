@@ -5,11 +5,13 @@ output: github_document
 ---
 
 ## Group Member
-  Jiayi Shen (UNI: js5354)  
+  Jiayi Shen (UNI: js5354)
+  Shan Jiang(UNI: sj2921)
+  
 
 
 ## Project Title
-
+Where you are going: Analysis of Data Science Job Outlook of United States Labor Market in 2018. 
 
 
 ## Motivation
