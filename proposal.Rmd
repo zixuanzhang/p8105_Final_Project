@@ -5,27 +5,83 @@ output: github_document
 ---
 
 ## Group Member
-  Jiayi Shen (UNI: js5354)  
+  * Jiayi Shen (js5354)
+  * Shan Jiang (sj2921)
+  * Jie Yu (jy2944)
+  * Eleanor Zhang (zz2602)
+  * Guojing Wu (gw2383)
+  
 
 
 ## Project Title
-
+Where you are going: Analysis of Data Science Job Outlook of United States Labor Market in 2018. 
 
 
 ## Motivation
 
+According to [the 2018 August Linkedin Workforce Report](https://economicgraph.linkedin.com/resources/linkedin-workforce-report-august-2018), there is  a rising demand of work forces with data science skills across industries in United States. As more institutions and industry sectors rely on big data to make operations and decisions, the national shortage of data scientists has been reported to be 151,717. Some regions are in acute shortage of workforce in data science such as New York city, San Francisco and Los Angeles, etc. 
+
+Given that graduate students entering into the job market with bachelor, master, or PhD degree are actively seeking jobs locally or nationwide, we want to utilize the 7000 job posting information scraped from [Indeed](https://www.indeed.com/jobs?q=data+science&start=10) in order to investigate the data science job market in U.S. Particularly, we are interested in areas with job opportunities, what skills employers are looking for, and different qualifications and requirements for different types of job titles . We are hoping these exploratory analysis will help students better taylor at their skill building and job hunting in the future.
 
 
 ## Intended Final Product
+#### Part I Background and Introduction 
+* Two datasets: one for background check of the job market dynamics for the past decade.  
+* Graph 1: Computer and mathematic occupations trend from 2003 to 2018
+ 
+
+#### Part II 
+* Descriptive Part:
+
+1. Geographical Visualization
+
+ (1) * Graph 2: (map of us/potentially a bubble map) Which regions are in high demand of labor with data science skills?
+
+* Potential suggestions for new graduates: local shortages for data science skills, will this cause a migration or
+
+2. Skills:
+what kind of data science skills are in need?(from job description)
+
+* Top 5 skills; Top 5 tools; 
+* Most-desired degree;
+* Most-desired majors;
+
+##### Graphs: 
+
+* Graphs 3. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Degrees and Majors;
+
+* Graphs 4. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most popular tools
+
+* Graphs 5. Compare 3 groups: Engineer vs. Data Scientist vs. Data Analyst, Most concerntrated areas;
+
+* Graphs 6. global-500 companies requirements / other companies requirements comparison?
 
 
 
 ## Anticipated Data Source
 
+* [National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics (using data covering 2007 until 2017)](https://www.bls.gov/oes/tables.htm)
+
+* [Data Scientist Job Posts in the U.S on Indeed Website in 2018 August](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)
+
+* [The 500 Largest Industrial Corporations in the U.S., Published by Fortune  magazine (updated by October 5, 2018)](https://catalog.data.gov/dataset/fortune-500-corporate-headquarters)
 
 
 ## Challenges
+1. Text mining: The job description part of the original dataset contains substantial information. We need to determine some keywords which describe the skills, tools, education requirements and working years, respectively, in order to acquire a clean set of variables for further analysis.
+
+2. Job title classification: Mark the levels of different titles in different companies. Data scientist may not be of the same level when companies are of different sizes or different internal governance structure.
+
+Companies of different sizes and internal governance structure give different job titles for data science employees. We need to identify all the possible job titles from the original dataset and classify them to the three general categories: data engineer, data scientist, and data analyst.
 
 
 
 ## Planned Timeline
+
+| Scheduled Tasks                   | Due dates                 |
+| --------------------------------- | ------------------------- |
+| Scrape data and tidy              | Nov. 16 (Friday)          |
+| Analyse and produce visualization | Nov. 23 (Friday)          |
+| Draft report                      | Nov. 30 (Friday)          |
+| Make webpage and screencast       | Dec. 4 (Tuesday)          |
+| Final editing                     | Dec. 6 (Friday by 4 p.m.) |
