@@ -9,6 +9,7 @@ library(tidyverse)
 library(readr)
 library(rvest)
 library(httr)
+library(stringr)
 ```
 
 ### read data (existing)
@@ -22,6 +23,23 @@ head(datascience)
 
 str(datascience)
 ```
+
+### tidy datascience data
+
+```{r}
+datascience %>% 
+  filter(str_detect(.$description, "[Bb]achelor") == TRUE) 
+
+datascience %>% 
+  filter(str_detect(.$description, "[Mm]aster") == TRUE) 
+
+datascience %>% 
+  filter(str_detect(.$description, "degree") == TRUE)
+
+datascience %>% 
+  filter(str_detect(.$description, "years experience") == TRUE)
+```
+
 
 ### try scrape data from Indeed
 
@@ -83,4 +101,5 @@ full_data <- map(vec_urls, read_indeed_pages) %>% bind_rows()
 
 full_data
 ```
+
 
