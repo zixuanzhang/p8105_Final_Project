@@ -26,80 +26,46 @@ str(datascience)
 
 ### tidy datascience data
 
+degree
+
 ```{r}
 datascience %>% 
-  filter(str_detect(.$description, "[Bb]achelor") == TRUE) 
+  filter(str_detect(description, c("[Bb]achelor", "BA", "BS")) == TRUE)
 
 datascience %>% 
-  filter(str_detect(.$description, "[Mm]aster") == TRUE) 
+  mutate(degree = ifelse(str_detect(.$description,  c("[Bb]achelor", "BA", "BS", "B.S")) == TRUE, "bachelor",
+                        ifelse(str_detect(.$description, "[Mm]aster") == TRUE, "master",
+                               ifelse(str_detect(.$description, "[Pp][Hh][Dd]") == TRUE, "phd", "other")))) %>% 
+  ggplot(aes(x = degree)) + geom_bar()
 
 datascience %>% 
-  filter(str_detect(.$description, "degree") == TRUE)
+  mutate(degree = ifelse(str_detect(.$description,  c("[Bb]achelor", "BA", "BS", "B.S")) == TRUE, "bachelor",
+                        ifelse(str_detect(.$description, "[Mm]aster") == TRUE, "master",
+                               ifelse(str_detect(.$description, "[Pp][Hh][Dd]") == TRUE, "phd", "other")))) %>% 
+  ggplot(aes(x = degree)) + geom_bar()
 
 datascience %>% 
   filter(str_detect(.$description, "years experience") == TRUE)
 ```
 
-
-### try scrape data from Indeed
-
-```{r}
-read_indeed_pages <- function(url) {
-  
-   h <- read_html(url_base)
-   
-  title <- h %>% 
-  html_nodes("#resultsCol .jobtitle") %>% 
-  html_text()
-  
-  location <- h %>% 
-  html_nodes(".location") %>% 
-  html_text()
-  
-  company <- h %>% 
-  html_nodes(".company") %>% 
-  html_text()
-  
-  description <- h %>% 
-  html_nodes(".summary") %>% 
-  html_text() 
-
-  reviews <- h %>% 
-  html_nodes(".slNoUnderline .slNoUnderline") %>% 
-  html_text() %>% 
-  readr::parse_number()
-  
-  tibble(title, company, location, description, reviews)
-}
-```
-
-try reviews (problem: cannot fit in missing values, some job posting do not have reviews)
+major:
 
 ```{r}
-h <- read_html("https://www.indeed.com/jobs?q=data+science&explvl=entry_level")
+datascience %>% 
+  filter(str_detect(description, "[Mm]athematics") == TRUE)
 
-# grab reviews
-h %>% 
-  html_nodes(".slNoUnderline .slNoUnderline") %>% 
-  html_text() %>% 
-  readr::parse_number()
+datascience %>% 
+  filter(str_detect(description, "[Cc]omputer") == TRUE)
 
-# grab ratings
-h %>% 
-  html_nodes(".rating")
+datascience %>% 
+   mutate(major.math = ifelse(str_detect(.$description, "[Mm]athematics") == TRUE, "Math", NA))
 ```
 
-try the function of scraping data (raw data not tidy yet)
 
-```{r}
-url_base = "https://www.indeed.com/jobs?q=data+science&start="
 
-vec_urls = str_c(url_base, seq(10, 100, by = 10))
-vec_urls
 
-full_data <- map(vec_urls, read_indeed_pages) %>% bind_rows()
 
-full_data
-```
+
+
 
 
