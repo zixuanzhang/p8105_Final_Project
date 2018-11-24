@@ -33,14 +33,8 @@ datascience %>%
   filter(str_detect(description, c("[Bb]achelor", "BA", "BS")) == TRUE)
 
 datascience %>% 
-  mutate(degree = ifelse(str_detect(.$description,  c("[Bb]achelor", "BA", "BS", "B.S")) == TRUE, "bachelor",
-                        ifelse(str_detect(.$description, "[Mm]aster") == TRUE, "master",
-                               ifelse(str_detect(.$description, "[Pp][Hh][Dd]") == TRUE, "phd", "other")))) %>% 
-  ggplot(aes(x = degree)) + geom_bar()
-
-datascience %>% 
-  mutate(degree = ifelse(str_detect(.$description,  c("[Bb]achelor", "BA", "BS", "B.S")) == TRUE, "bachelor",
-                        ifelse(str_detect(.$description, "[Mm]aster") == TRUE, "master",
+  mutate(degree = ifelse(str_detect(.$description,  c("[Bb]achelor", "BA", "BS", "B.S", "B.A")) == TRUE, "bachelor",
+                        ifelse(str_detect(.$description, c("[Mm]aster", "M.S", "MS", "M.A", "MA", "M.P.H")) == TRUE, "master",
                                ifelse(str_detect(.$description, "[Pp][Hh][Dd]") == TRUE, "phd", "other")))) %>% 
   ggplot(aes(x = degree)) + geom_bar()
 
