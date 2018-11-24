@@ -10,12 +10,22 @@ library(readr)
 library(rvest)
 library(httr)
 library(stringr)
+theme_set(theme_bw())
 ```
+
+### objective
+
+degree
+
+major
+
+
 
 ### read data (existing)
 
 ```{r}
-datascience <- read_csv("./data/datascience_market/alldata.csv")
+datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
+  filter(!is.na(position))
 
 dim(datascience)
 
@@ -26,33 +36,45 @@ str(datascience)
 
 ### tidy datascience data
 
-degree
+minimum requirement of degree
 
 ```{r}
-datascience %>% 
-  filter(str_detect(description, c("[Bb]achelor", "BA", "BS")) == TRUE)
+pattern_Hi = "[Hh]igh [Ss]chool"
+pattern_Ba = "[Bb]achelor | \\WB\\.?A\\W | \\WB\\.?S\\W | [Cc]ollege | [Dd]egree"
+pattern_Ma = "[Mm]aster[^y] | [Aa]dvanced | \\WM\\.?[SA]\\W | [Gg]raduate"
+pattern_Phd = "\\W[Pp][Hh]\\.?[Dd]\\W | \\WM\\.?D\\W"
 
 datascience %>% 
-  mutate(degree = ifelse(str_detect(.$description,  c("[Bb]achelor", "BA", "BS", "B.S", "B.A")) == TRUE, "bachelor",
-                        ifelse(str_detect(.$description, c("[Mm]aster", "M.S", "MS", "M.A", "MA", "M.P.H")) == TRUE, "master",
-                               ifelse(str_detect(.$description, "[Pp][Hh][Dd]") == TRUE, "phd", "other")))) %>% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other"))) %>% 
   ggplot(aes(x = degree)) + geom_bar()
-
-datascience %>% 
-  filter(str_detect(.$description, "years experience") == TRUE)
 ```
 
-major:
+related background:
 
 ```{r}
+major <- tibble(major_name = c("Computer Science", "Statistics", "Mathematics", "Quantitative", 
+                               "Biology", "Economics", "Data Science", "Chemical Engineering",      "Biostatistics"))
+                
 datascience %>% 
   filter(str_detect(description, "[Mm]athematics") == TRUE)
 
-datascience %>% 
-  filter(str_detect(description, "[Cc]omputer") == TRUE)
 
 datascience %>% 
-   mutate(major.math = ifelse(str_detect(.$description, "[Mm]athematics") == TRUE, "Math", NA))
+  filter(str_detect(description, "[Cc]omputer [Ss]cience") == TRUE)
+
+datascience %>% 
+  filter(str_detect(description, "[Dd]ata [Ss]cience") == TRUE)
+
+```
+
+skill:
+
+```{r}
+
 ```
 
 
