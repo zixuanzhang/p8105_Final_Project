@@ -1,0 +1,41 @@
+---
+title: "tool variable"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(rvest)
+library(httr)
+library(stringr)
+```
+
+```{r}
+datascience <- read_csv("./data/datascience_market/alldata.csv")
+```
+
+```{r}
+tool_new = datascience %>% 
+  mutate(
+    python = ifelse(str_detect(.$description,  c("\\b[Pp][Yy][Tt][Hh][Oo][Nn]\\b")) == TRUE, 1, 0),
+    excel = ifelse(str_detect(.$description,  c("\\b[Ee][Xx][Cc][Ee][Ll]\\b")) == TRUE, 1, 0),
+    r = ifelse(str_detect(.$description,  c("\\b[Rr]\\b")) == TRUE, 1, 0),
+    sql = ifelse(str_detect(.$description,  c("\\b[Ss][Qq][Ll]\\b")) == TRUE, 1, 0),
+    java = ifelse(str_detect(.$description,  c("\\b[Jj][Aa][Vv][Aa]\\b")) == TRUE, 1, 0),
+    tableau = ifelse(str_detect(.$description,  c("\\b[Tt][Aa][Bb][Ll][Ee][Aa][Uu]\\b")) == TRUE, 1, 0),
+    sas = ifelse(str_detect(.$description,  c("\\b[Ss][Aa][Ss]\\b")) == TRUE, 1, 0),
+    matlab =  ifelse(str_detect(.$description,  c("\\b[Mm][Aa][Tt][Ll][Aa][Bb]\\b")) == TRUE, 1, 0),
+    c = ifelse(str_detect(.$description,  c("\\b[Cc]\\b")) == TRUE, 1, 0),
+    perl = ifelse(str_detect(.$description,  c("\\b[Pp][Ee][Rr][Ll]\\b")) == TRUE, 1, 0), 
+    scala = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Ll][Aa]\\b")) == TRUE, 1, 0), 
+    spark = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Rr][Kk]\\b")) == TRUE, 1, 0), 
+    hadoop = ifelse(str_detect(.$description,  c("\\b[Hh][Aa][Dd][Oo][Oo][Pp]\\b")) == TRUE, 1, 0), 
+    aws = ifelse(str_detect(.$description,  c("\\b[Aa][Ww][Ss]\\b")) == TRUE, 1, 0),
+    hive = ifelse(str_detect(.$description,  c("\\b[Hh][Ii][Vv][Ee]\\b")) == TRUE, 1, 0),
+    tensorflow = ifelse(str_detect(.$description,  c("\\b[Tt][Ee][Nn][Ss][Oo][Rr][Ff][Ll][Oo][Ww]\\b")) == TRUE, 1, 0),
+    linux = ifelse(str_detect(.$description,  c("\\b[Ll][Ii][Nn][Uu][Xx]\\b")) == TRUE, 1, 0)
+    )
+```
+
