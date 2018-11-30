@@ -98,11 +98,12 @@ Now we have `nrow(state_clean)` entries in our dataframe.
 Then we need to generate the geographical information for our dataset. 
 
 ```{r}
-state_clean %>% 
+library(ggmap)
+locations_df = 
+  state_clean %>% 
   distinct(state) %>% 
-  pull(state) 
-
-locations_df <- mutate_geocode(cities_df, place)
+  as.tibble() %>% 
+  mutate_geocode(state)
 
 ```
 
@@ -122,6 +123,10 @@ ggplot(data = us_state_map) +
   guides(fill = FALSE) 
 
 
+plot_usmap(data = state_clean, values = "pop_2015", lines = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Population (2015)", label = scales::comma
+  ) + theme(legend.position = "right")
 
 ```
 
