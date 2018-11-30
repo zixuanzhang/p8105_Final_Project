@@ -70,15 +70,20 @@ Import data of state level.
 ```{r}
 state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
   janitor::clean_names() %>% 
-  mutate(a_mean = ifelse(is.na(a_mean), mean(a_mean, na.rm = TRUE), a_mean))
+  mutate(a_mean = as.numeric(a_mean)) %>%
+  mutate(tot_emp = as.numeric(tot_emp))
+
 ## Missing data replaced by mean salary in that specific detailed field for annual salary 
-  
+state_df <-  
+  state_17 %>% 
+  mutate(a_mean = ifelse(is.na(a_mean), mean(a_mean, na.rm = TRUE), a_mean)) %>% 
+  mutate(state = tolower(state))    ## To match the case of state names in 2 dataframe 
 ```
 
 Then we need to combine the datasets from us.state map and our data.  
 
 ```{r}
-state_17 %>% 
+state_df %>% 
   distinct(state) %>% 
   pull(state) 
 ```
@@ -89,38 +94,27 @@ Also, it is far too difficult to create a U.S. state data visualization in R tha
 
 Then we only keep the computer and mathmatician job classification in our data. 
 
-```{r}
-library(ggplot2)
-library(fiftystater)
+### spatial map 
 
-statisticians_df = 
-  state_17 %>%
+```{r}
+
+state_salary <- 
+  state_df %>%
   filter(str_detect(occ_code, "^[1][5]") ) %>% 
   filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
-  mutate(state = tolower(state)) %>%   ## To match the case of state names in 2 dataframe 
+  group_by(state) %>%
+  summarize(mean_salary = mean(a_mean))
+  
+
+statisticians_df = 
+  state_df %>%
+  filter(str_detect(occ_code, "^[1][5]") ) %>% 
+  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
   group_by(state, occ_title) %>% 
   filter(occ_title == "Statisticians")
 
-
 place_df = statisticians %>% 
-   select(state, occ_code, occ_title,tot_emp, a_mean, a_median)  
-
-
-states_map <- map_data("state")
-
-library(fiftystater)
-
-ggplot(statisticians_df, aes(map_id = state)) + 
-  # map points to the fifty_states shape data
-  geom_map(aes(fill = a_mean), map = fifty_states) + 
-  expand_limits(x = fifty_states$long, y = fifty_states$lat) +
-  coord_map() +
-  scale_x_continuous(breaks = NULL) + 
-  scale_y_continuous(breaks = NULL) +
-  labs(x = "", y = "") +
-  theme(legend.position = "bottom", 
-        panel.background = element_blank()) + 
-  fifty_states_inset_boxes()
+   select(state, occ_code, occ_title,tot_emp, a_mean, a_median) 
   
 ```
 
@@ -129,21 +123,30 @@ Now we have `nrow(state_clean)` entries in our dataframe.
 Then we need to generate the geographical information for our dataset. 
 
 ```{r}
-library(ggmap)
-locations_df = 
-  state_clean %>% 
-  distinct(state) %>% 
-  as.tibble() %>% 
-  mutate_geocode(state)
-
-```
-
-```{r}
-library(leaflet.extras)
 library(ggplot2)
 library(ggmap)
-library(maps)
-library(mapdata)
+library(fiftystater)
+library(plotly)
+
+ p = ggplot(state_salary, aes(map_id = state)) + 
+  # map points to the fifty_states shape data
+  geom_map(aes(fill =  mean_salary), map = fifty_states) + 
+  expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+  coord_map() +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  labs(x = "", y = "")  +
+  guides(fill = guide_colorbar(barwidth = 18, barheight = .5)) +
+  theme(legend.position = "bottom", 
+        panel.background = element_blank()) 
+
+ggplotly(p)
+```
+
+
+
+
+```{r}
 
 us_state_map <- map_data("state") %>%
   as_data_frame()
