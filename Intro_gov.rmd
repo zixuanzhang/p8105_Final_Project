@@ -138,9 +138,23 @@ library(plotly)
   labs(x = "", y = "")  +
   guides(fill = guide_colorbar(barwidth = 18, barheight = .5)) +
   theme(legend.position = "bottom", 
-        panel.background = element_blank()) 
+        panel.background = element_blank())  +
+  facet_wrap( ~ variable) + theme_void()
 
-ggplotly(p)
+ 
+## By using map plotly
+states_map <- map_data("state")
+
+g <- ggplot(state_salary, aes(map_id = state)) + 
+  # map points to the fifty_states shape data
+  geom_map(aes(fill =  mean_salary), map = states_map) + 
+  expand_limits(x = states_map$long, y = states_map$lat) 
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  labs(x = "", y = "")  
+
+ggplotly(g)
+
 ```
 
 
