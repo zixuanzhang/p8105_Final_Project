@@ -69,8 +69,10 @@ Import data of state level.
 
 ```{r}
 state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
-  janitor::clean_names()
- 
+  janitor::clean_names() %>% 
+  mutate(a_mean = ifelse(is.na(a_mean), mean(a_mean, na.rm = TRUE), a_mean))
+## Missing data replaced by mean salary in that specific detailed field for annual salary 
+  
 ```
 
 Then we need to combine the datasets from us.state map and our data.  
@@ -88,11 +90,38 @@ Also, it is far too difficult to create a U.S. state data visualization in R tha
 Then we only keep the computer and mathmatician job classification in our data. 
 
 ```{r}
+library(ggplot2)
+library(fiftystater)
 
-state_clean = state_17 %>%
+statisticians_df = 
+  state_17 %>%
   filter(str_detect(occ_code, "^[1][5]") ) %>% 
-  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) 
+  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
+  mutate(state = tolower(state)) %>%   ## To match the case of state names in 2 dataframe 
+  group_by(state, occ_title) %>% 
+  filter(occ_title == "Statisticians")
 
+
+place_df = statisticians %>% 
+   select(state, occ_code, occ_title,tot_emp, a_mean, a_median)  
+
+
+states_map <- map_data("state")
+
+library(fiftystater)
+
+ggplot(statisticians_df, aes(map_id = state)) + 
+  # map points to the fifty_states shape data
+  geom_map(aes(fill = a_mean), map = fifty_states) + 
+  expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+  coord_map() +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom", 
+        panel.background = element_blank()) + 
+  fifty_states_inset_boxes()
+  
 ```
 
 Now we have `nrow(state_clean)` entries in our dataframe. 
