@@ -83,6 +83,8 @@ state_17 %>%
 
 Since we are making the map of the U.S, we have `nrow(state_17)` entries in our dataset, then we may choose to leave out the data of **Guam**, **Virgin Islands** and the **Puerto Rico** in the convenience of visualization. 
 
+Also, it is far too difficult to create a U.S. state data visualization in R that includes Alaska and Hawaii. 
+
 Then we only keep the computer and mathmatician job classification in our data. 
 
 ```{r}
@@ -128,5 +130,6 @@ plot_usmap(data = state_clean, values = "pop_2015", lines = "red") +
     low = "white", high = "red", name = "Population (2015)", label = scales::comma
   ) + theme(legend.position = "right")
 
+citation("ggmap")
 ```
 
