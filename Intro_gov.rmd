@@ -8,15 +8,19 @@ output: github_document
 ## Data: May 2017 National Occupational Employment and Wage Estimates United States>
 
 ## Salary Prospect From 2017 
+
 ```{r}
 library(tidyverse)
+library(readxl)
+
 ```
 
 
 ```{r}
-library(readxl)
+
 national_17 <- read_excel("data/oesm17nat/national_M2017_dl.xlsx")
 
+national_17 %>% View()
 
 national_17 = national_17 %>% 
               janitor::clean_names() %>% 
@@ -61,8 +65,61 @@ For detetcting the outlook of the computer and math category jobs, we carried ou
 
 ## Geographical plots and maps 
 
+Import data of state level.
+
+```{r}
+state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
+  janitor::clean_names()
+ 
+```
+
+Then we need to combine the datasets from us.state map and our data.  
+
+```{r}
+state_17 %>% 
+  distinct(state) %>% 
+  pull(state) 
+```
+
+Since we are making the map of the U.S, we have `nrow(state_17)` entries in our dataset, then we may choose to leave out the data of **Guam**, **Virgin Islands** and the **Puerto Rico** in the convenience of visualization. 
+
+Then we only keep the computer and mathmatician job classification in our data. 
+
 ```{r}
 
+state_clean = state_17 %>%
+  filter(str_detect(occ_code, "^[1][5]") ) %>% 
+  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) 
+
+```
+
+Now we have `nrow(state_clean)` entries in our dataframe. 
+
+Then we need to generate the geographical information for our dataset. 
+
+```{r}
+state_clean %>% 
+  distinct(state) %>% 
+  pull(state) 
+
+locations_df <- mutate_geocode(cities_df, place)
+
+```
+
+```{r}
+library(leaflet.extras)
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+
+us_state_map <- map_data("state") %>%
+  as_data_frame()
+ 
+ggplot(data = us_state_map) + 
+  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
+  coord_quickmap() +
+  guides(fill = FALSE) 
 
 
 
