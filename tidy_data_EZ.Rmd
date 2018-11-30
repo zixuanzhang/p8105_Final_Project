@@ -8,8 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(rvest)
-library(httr)
 library(stringr)
+library(tidytext)
 theme_set(theme_bw())
 ```
 
@@ -51,13 +51,20 @@ datascience %>%
                                ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
   mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other"))) %>% 
   ggplot(aes(x = degree)) + geom_bar()
+
+datascience_degree <- datascience %>% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other"))) 
 ```
 
 related background:
 
 ```{r}
 major <- tibble(major_name = c("Computer Science", "Statistics", "Mathematics", "Quantitative", 
-                               "Biology", "Economics", "Data Science", "Chemical Engineering",      "Biostatistics"))
+                               "Biology", "Economics", "Data Science", "Chemical Engineering", "Biostatistics"))
                 
 datascience %>% 
   filter(str_detect(description, "[Mm]athematics") == TRUE)
@@ -78,6 +85,123 @@ skill:
 ```
 
 
+### word frequency count
+
+Took 100 samples from 7000
+
+```{r}
+datascience <- mutate(datascience, index = 1:nrow(datascience))
+set.seed(1)
+sample1 <- sample(1:nrow(datascience), 100, replace = FALSE)
+sample1
+
+data_100 <- datascience[sample1,]
+```
+
+we’ll un-nest the tokens (i.e. words) in each description; the result is a tidy dataset in which each word is contained within a separate row.
+
+word frequency in description
+
+1. Single word 
+
+```{r}
+inspection_words_single = 
+  datascience %>% 
+  unnest_tokens(word, description)
+
+
+data(stop_words)
+
+keep_letter_stop_words <- stop_words %>% filter(!word %in% c("C", "c", "R", "r"))
+
+inspection_words_single = 
+  anti_join(inspection_words_single, keep_letter_stop_words)
+
+inspection_words_single %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  coord_flip()
+```
+
+2. Double word
+
+```{r}
+inspection_words = 
+  datascience %>% 
+  unnest_tokens(word, description)
+
+
+data(stop_words)
+
+keep_letter_stop_words <- stop_words %>% filter(!word %in% c("C", "c", "R", "r"))
+
+inspection_words = 
+  anti_join(inspection_words, keep_letter_stop_words)
+
+
+inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 2) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(30) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  coord_flip()
+```
+
+3. Three words
+
+```{r}
+inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 3) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  coord_flip()
+```
+
+
+position word frequency
+
+```{r}
+inspection_words_position = 
+  datascience %>% 
+  unnest_tokens(word, position)
+
+inspection_words
+
+data(stop_words)
+
+#keep_letter_stop_words <- stop_words %>% filter(!word %in% c("C", "c", "R", "r"))
+
+inspection_words_position = 
+  anti_join(inspection_words_position, stop_words)
+
+inspection_words_position %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(10) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  coord_flip()
+
+```
+
+
+Comparing words across groups
 
 
 
