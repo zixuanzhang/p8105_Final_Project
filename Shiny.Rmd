@@ -25,7 +25,23 @@ Column {data-width=650}
 
 ```{r}
 
+library(shiny)    # for shiny apps
+library(leaflet)  # renderLeaflet function
+library(spData)   # loads the world dataset
+
+ui = fluidPage(
+  sliderInput(inputId = " ", "Mean annual salary", 49, 84, value = 80),
+      leafletOutput(outputId = "map")
+  )
+server = function(input, output) {
+  output$map = renderLeaflet({
+    leaflet() %>% addProviderTiles("OpenStreetMap.BlackAndWhite") %>%
+      addPolygons(data = world[world$lifeExp < input$life, ])})
+}
+
+shinyApp(ui, server)
 ```
+
 
 Column {data-width=350}
 -----------------------------------------------------------------------
