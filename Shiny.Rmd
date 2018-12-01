@@ -9,12 +9,38 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+
+salary_data <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
+  janitor::clean_names() %>% 
+  mutate(state = tolower(state)) %>%    
+  mutate(a_mean = as.numeric(a_mean)) %>%
+  mutate(tot_emp = as.numeric(tot_emp)) %>% 
+  mutate(a_mean = ifelse(is.na(a_mean), mean(a_mean, na.rm = TRUE), a_mean)) %>% 
+  filter(str_detect(occ_code, "^[1][5]") ) %>% 
+  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
+  group_by(state) %>%
+  summarize(mean_salary = mean(a_mean))
+  
 ```
 
 Column {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
+library(shiny)    # for shiny apps
+library(leaflet)  # renderLeaflet function
+
+max_salary = 107960 
+min_salary =  salary_data %>% 
+    distinct(mean_salary) %>% 
+    min()
+
+# selectInput widget
+  sliderInput(inputId = "Mean annual salary range", label = h3("Select salary range"),
+            min_salary, 
+            max_salary, 
+            value = c(30000, 110000)
+  )
 
 ```
 
@@ -25,21 +51,7 @@ Column {data-width=650}
 
 ```{r}
 
-library(shiny)    # for shiny apps
-library(leaflet)  # renderLeaflet function
-library(spData)   # loads the world dataset
 
-ui = fluidPage(
-  sliderInput(inputId = " ", "Mean annual salary", 49, 84, value = 80),
-      leafletOutput(outputId = "map")
-  )
-server = function(input, output) {
-  output$map = renderLeaflet({
-    leaflet() %>% addProviderTiles("OpenStreetMap.BlackAndWhite") %>%
-      addPolygons(data = world[world$lifeExp < input$life, ])})
-}
-
-shinyApp(ui, server)
 ```
 
 
