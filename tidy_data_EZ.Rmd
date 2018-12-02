@@ -26,7 +26,7 @@ datascience <- read_csv("./data/datascience_market/alldata.csv") %>%
 
 minimum requirement of degree
 
-```{r}
+```{r, dpi = 300}
 pattern_Hi = "[Hh]igh [Ss]chool"
 pattern_Ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
 pattern_Ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
@@ -60,7 +60,7 @@ we’ll un-nest the tokens (i.e. words) in each description; the result is a tid
 
 word frequency in description
 
-1)  Single word 
+*  Single word 
 
 ```{r, dpi = 300}
 data(stop_words)
@@ -73,7 +73,7 @@ inspection_words_single =
 
 inspection_words_single %>% 
   count(word, sort = TRUE) %>% 
-  top_n(50) %>% 
+  top_n(100) %>% 
   mutate(word = fct_reorder(word, n)) %>% 
   ggplot(aes(x = word, y = n)) + 
   geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
@@ -81,9 +81,9 @@ inspection_words_single %>%
   coord_flip()
 ```
 
-2)  Double word
+*  Double word
 
-```{r}
+```{r, dpi = 300}
 data(stop_words)
 keep_letter_stop_words <- stop_words %>% filter(!word %in% c("C", "c", "R", "r"))
 
@@ -107,9 +107,9 @@ inspection_words %>%
   coord_flip()
 ```
 
-3)  Three words
+*  Three words
 
-```{r}
+```{r, dpi = 300}
 inspection_words %>%
   nest(word) %>%
   mutate(text = map(data, unlist), 
@@ -125,9 +125,9 @@ inspection_words %>%
   coord_flip()
 ```
 
-4)  Three words
+*  four words
 
-```{r}
+```{r, dpi = 300}
 inspection_words %>%
   nest(word) %>%
   mutate(text = map(data, unlist), 

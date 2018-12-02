@@ -59,7 +59,7 @@ we’ll un-nest the tokens (i.e. words) in each description; the result is a tid
 
 word frequency in description
 
-1.  Single word
+-   Single word
 
 ``` r
 data(stop_words)
@@ -72,7 +72,7 @@ inspection_words_single =
 
 inspection_words_single %>% 
   count(word, sort = TRUE) %>% 
-  top_n(50) %>% 
+  top_n(100) %>% 
   mutate(word = fct_reorder(word, n)) %>% 
   ggplot(aes(x = word, y = n)) + 
   geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
@@ -82,7 +82,7 @@ inspection_words_single %>%
 
 ![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
-1.  Double word
+-   Double word
 
 ``` r
 data(stop_words)
@@ -110,7 +110,7 @@ inspection_words %>%
 
 ![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-1.  Three words
+-   Three words
 
 ``` r
 inspection_words %>%
@@ -130,7 +130,7 @@ inspection_words %>%
 
 ![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
-1.  Three words
+-   four words
 
 ``` r
 inspection_words %>%
