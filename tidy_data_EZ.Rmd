@@ -12,6 +12,8 @@ library(readr)
 library(rvest)
 library(stringr)
 library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
 theme_set(theme_bw())
 ```
 
@@ -105,6 +107,18 @@ inspection_words %>%
   geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
   labs(y = "double world frequency") +
   coord_flip()
+
+word_cloud2 <- inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 2) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) 
+
+wordcloud(words = word_cloud2$word, freq = word_cloud2$n, random.order=FALSE,
+          rot.per=0.35, colors=brewer.pal(8, "Dark2"))
 ```
 
 *  Three words
