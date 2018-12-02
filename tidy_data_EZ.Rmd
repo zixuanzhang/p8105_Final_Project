@@ -62,7 +62,7 @@ word frequency in description
 
 *  Single word 
 
-```{r, dpi = 300}
+```{r, dpi = 300, fig.height = 15}
 data(stop_words)
 keep_letter_stop_words <- stop_words %>% filter(!word %in% c("C", "c", "R", "r"))
 
