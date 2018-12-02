@@ -1,5 +1,5 @@
 ---
-title: "tool variable"
+title: "tools and skills variable"
 output: github_document
 ---
 
@@ -16,6 +16,8 @@ theme_set(theme_bw())
 ```{r}
 datascience <- read_csv("./data/datascience_market/alldata.csv")
 ```
+
+### Tools
 
 Extract tool variable and plot
 ```{r}
@@ -64,6 +66,7 @@ tool_new %>%
 ```
 
 
+### Skills
 
 Extract skill variable and plot (Are the classifications right?)
 

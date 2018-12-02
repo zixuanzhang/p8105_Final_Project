@@ -1,4 +1,4 @@
-tool variable
+tools and skills variable
 ================
 
 ``` r
@@ -13,6 +13,8 @@ datascience <- read_csv("./data/datascience_market/alldata.csv")
     ##   reviews = col_integer(),
     ##   location = col_character()
     ## )
+
+### Tools
 
 Extract tool variable and plot
 
@@ -62,6 +64,8 @@ tool_new %>%
 ```
 
 ![](tools_and_skills_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+### Skills
 
 Extract skill variable and plot (Are the classifications right?)
 
