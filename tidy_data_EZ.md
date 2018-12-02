@@ -110,6 +110,22 @@ inspection_words %>%
 
 ![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
+``` r
+word_cloud2 <- inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 2) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) 
+
+wordcloud(words = word_cloud2$word, freq = word_cloud2$n, random.order=FALSE,
+          rot.per=0.35, colors=brewer.pal(8, "Dark2"))
+```
+
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-2.png)
+
 -   Three words
 
 ``` r
