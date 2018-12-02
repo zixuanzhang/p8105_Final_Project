@@ -64,7 +64,7 @@ tool_new %>%
 
 
 
-Extract skill variable and plot
+Extract skill variable and plot (Are the classifications right?)
 
 ```{r}
 skill_new = datascience %>%
@@ -72,8 +72,9 @@ skill_new = datascience %>%
     machine_learning = ifelse(str_detect(.$description,  c("[Mm]achine [Ll]earning")) == TRUE, 1, 0),
     deep_learning = ifelse(str_detect(.$description,  c("[Dd]eep [Ll]earning")) == TRUE, 1, 0),
     # Data Manipulation & Analysis
-    # is the classification right?
-    data_mani_ana = ifelse(str_detect(.$description,  c("[Dd]ata [Aa]nalysis|[Dd]ata [Mm]anipulation|[Dd]ata [Mm]anagement|[Dd]ata [Ee]valuation|[Dd]ata [Vv]isualization|[Ss]tatistical [Aa]nalysis|[Rr]egression")) == TRUE, 1, 0),
+    data_mani_ana = ifelse(str_detect(.$description,  c("[Dd]ata [Aa]nalysis|[Dd]ata [Mm]anipulation|[Dd]ata [Mm]anagement|[Dd]ata [Ee]valuation|[Ss]tatistical [Aa]nalysis|[Rr]egression")) == TRUE, 1, 0),
+    # data visualization
+    data_visul = ifelse(str_detect(.$description,  c("[Dd]ata [Vv]isualization")) == TRUE, 1, 0),
     data_mining = ifelse(str_detect(.$description,  c("[Dd]ata [Mm]ining")) == TRUE, 1, 0),
     modeling = ifelse(str_detect(.$description,  c("[Mm]odeling")) == TRUE, 1, 0),
     # include machine learning optimization, data optimization, mathematical optimization???
@@ -83,9 +84,7 @@ skill_new = datascience %>%
     # artifical intelligence
     arti_inte = ifelse(str_detect(.$description,  c("\\bAI\\b|[Nn]eural [Nn]etwork")) == TRUE, 1, 0)
   )
-
-  
-datascience %>% 
-  filter(str_detect(description, c("[Mm]achine [Ll]earning|[Dd]ecision [Tt]ree|[Rr]andom [Ff]orest")) == TRUE)
 ```
+
+
 
