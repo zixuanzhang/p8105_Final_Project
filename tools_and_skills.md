@@ -95,20 +95,27 @@ skill_new = skill_new %>%
   select(skills, sum = value) %>% 
   `row.names<-.default`(1:9)
   
-library(packcircles)
-
+# use packege`packcircles` to make bubble plot
 packing <- circleProgressiveLayout(skill_new)
 dat.gg <- circleLayoutVertices(packing)
 
-new_df <- cbind(skill_new, packing) 
+plot_df <- cbind(skill_new, packing) 
 
-new_df$text2 <- paste0(new_df$skills,"\n",new_df$sum)
+plot_df$text2 <- paste0(plot_df$skills,"\n",plot_df$sum)
 
 ggplot(data = dat.gg) +
   geom_polygon(aes(x, y, group = id, fill =  factor(id)), color = "white", show.legend = FALSE) +
   scale_y_reverse() +
   coord_equal() +
-  geom_text(data = new_df, aes(x, y,label = text2))
+  geom_text(data = plot_df, aes(x, y,label = text2)) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank()
+    )
 ```
 
 ![](tools_and_skills_files/figure-markdown_github/unnamed-chunk-5-1.png)
