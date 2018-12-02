@@ -39,7 +39,7 @@ tool_new = datascience %>%
     )
 ```
 
-```{r}
+```{r fig.width = 10, fig.height = 6}
 tool_new %>% 
   select(python:linux) %>% 
   # sum of each column
@@ -52,9 +52,12 @@ tool_new %>%
   rename(sum = value) %>% 
   mutate(tool = fct_reorder(tool, sum)) %>% 
   ggplot(aes(x = tool, y = sum, fill = tool)) +
-  geom_col() + 
+  geom_col() +
+  geom_text(aes(label = sum), hjust = -0.2, vjust = 0.4) +
   coord_flip() +
   labs(y = "word count") +
-  theme(legend.position = "none")
+  theme(
+    legend.position = "none",
+    axis.title.y = element_blank())
 ```
 
