@@ -30,12 +30,31 @@ tool_new = datascience %>%
     c = ifelse(str_detect(.$description,  c("\\b[Cc]\\b")) == TRUE, 1, 0),
     perl = ifelse(str_detect(.$description,  c("\\b[Pp][Ee][Rr][Ll]\\b")) == TRUE, 1, 0), 
     scala = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Ll][Aa]\\b")) == TRUE, 1, 0), 
-    spark = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Rr][Kk]\\b")) == TRUE, 1, 0), 
+    spark = ifelse(str_detect(.$description,  c("\\b[Ss][Pp][Aa][Rr][Kk]\\b")) == TRUE, 1, 0), 
     hadoop = ifelse(str_detect(.$description,  c("\\b[Hh][Aa][Dd][Oo][Oo][Pp]\\b")) == TRUE, 1, 0), 
     aws = ifelse(str_detect(.$description,  c("\\b[Aa][Ww][Ss]\\b")) == TRUE, 1, 0),
     hive = ifelse(str_detect(.$description,  c("\\b[Hh][Ii][Vv][Ee]\\b")) == TRUE, 1, 0),
     tensorflow = ifelse(str_detect(.$description,  c("\\b[Tt][Ee][Nn][Ss][Oo][Rr][Ff][Ll][Oo][Ww]\\b")) == TRUE, 1, 0),
     linux = ifelse(str_detect(.$description,  c("\\b[Ll][Ii][Nn][Uu][Xx]\\b")) == TRUE, 1, 0)
     )
+```
+
+```{r}
+tool_new %>% 
+  select(python:linux) %>% 
+  # sum of each column
+  colSums(., na.rm = TRUE) %>% 
+  as.tibble() %>% 
+  # extract the row names (tool names) and set them as the value of first column
+  cbind(tool = row.names(.), .) %>% 
+  # clean the original row names
+  `row.names<-.default`(1:17) %>% 
+  rename(sum = value) %>% 
+  mutate(tool = fct_reorder(tool, sum)) %>% 
+  ggplot(aes(x = tool, y = sum, fill = tool)) +
+  geom_col() + 
+  coord_flip() +
+  labs(y = "word count") +
+  theme(legend.position = "none")
 ```
 
