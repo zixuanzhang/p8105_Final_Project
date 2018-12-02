@@ -1,23 +1,22 @@
----
-title: "tool variable"
-output: github_document
----
+tool variable
+================
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(readr)
-library(rvest)
-library(httr)
-library(stringr)
-```
-
-```{r}
+``` r
 datascience <- read_csv("./data/datascience_market/alldata.csv")
 ```
 
+    ## Parsed with column specification:
+    ## cols(
+    ##   position = col_character(),
+    ##   company = col_character(),
+    ##   description = col_character(),
+    ##   reviews = col_integer(),
+    ##   location = col_character()
+    ## )
+
 Extract tool variable and plot
-```{r}
+
+``` r
 tool_new = datascience %>% 
   mutate(
     python = ifelse(str_detect(.$description,  c("\\b[Pp][Yy][Tt][Hh][Oo][Nn]\\b")) == TRUE, 1, 0),
@@ -40,7 +39,7 @@ tool_new = datascience %>%
     )
 ```
 
-```{r fig.width = 10, fig.height = 6}
+``` r
 tool_new %>% 
   select(python:linux) %>% 
   # sum of each column
@@ -62,11 +61,11 @@ tool_new %>%
     axis.title.y = element_blank())
 ```
 
-
+![](tools_and_skills_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 Extract skill variable and plot (Are the classifications right?)
 
-```{r}
+``` r
 skill_new = datascience %>%
   mutate(
     machine_learning = ifelse(str_detect(.$description,  c("[Mm]achine [Ll]earning")) == TRUE, 1, 0),
@@ -86,7 +85,7 @@ skill_new = datascience %>%
   )
 ```
 
-```{r}
+``` r
 skill_new = skill_new %>% 
   select(machine_learning:arti_inte) %>% 
   # sum of each column
@@ -112,4 +111,4 @@ ggplot(data = dat.gg) +
   geom_text(data = new_df, aes(x, y,label = text2))
 ```
 
-
+![](tools_and_skills_files/figure-markdown_github/unnamed-chunk-5-1.png)
