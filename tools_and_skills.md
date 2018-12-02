@@ -52,6 +52,10 @@ tool_new %>%
   # clean the original row names
   `row.names<-.default`(1:17) %>% 
   rename(sum = value) %>% 
+  mutate(
+    tool = str_to_title(tool),
+    tool = recode(tool, "C" = "C/C++")
+         ) %>% 
   mutate(tool = fct_reorder(tool, sum)) %>% 
   ggplot(aes(x = tool, y = sum, fill = tool)) +
   geom_col() +
