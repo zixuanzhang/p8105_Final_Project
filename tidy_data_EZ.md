@@ -1,16 +1,16 @@
 read data from Indeed
 ================
 
-### read data (existing)
+read data (existing)
+--------------------
 
 ``` r
 datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
   filter(!is.na(position))
 ```
 
-### tidy datascience data
-
 minimum requirement of degree
+-----------------------------
 
 ``` r
 pattern_Hi = "[Hh]igh [Ss]chool"
@@ -31,7 +31,50 @@ datascience %>%
 
 ![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
-### word frequency count
+tree map for related background
+-------------------------------
+
+``` r
+pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
+                 "[Ss]tatistic", 
+                 "[Mm]ath", 
+                 "[Qq]uantitative", 
+                 "[Ee]conomic", 
+                 "[Bb]iolog", 
+                 "[Bb]iostatis", 
+                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+                 "[Cc]hemical [Ee]ngineering")
+name_bg = c("CS", 
+          "Statistics", 
+          "Mathematics", 
+          "Quantitative", 
+          "Economics", 
+          "Biology", 
+          "Biostatistics", 
+          "DS", 
+          "Engineer")
+
+bg_freq = data.frame(
+  background = pattern_bg, 
+  index = name_bg, 
+  freq = rep(0, length(pattern_bg))
+)
+
+for (i in c(1:length(pattern_bg))) {
+  bg_freq$freq[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+}
+
+bg_freq %>% 
+  treemap(index = "index", 
+          vSize = "freq", 
+          type = "index",
+          palette = "Blues")
+```
+
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+word frequency count
+--------------------
 
 Took 100 samples from 7000
 
@@ -80,7 +123,7 @@ inspection_words_single %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 -   Double word
 
@@ -108,7 +151,9 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+word cloud
 
 ``` r
 word_cloud2 <- inspection_words %>%
@@ -124,7 +169,7 @@ wordcloud(words = word_cloud2$word, freq = word_cloud2$n, random.order=FALSE,
           rot.per=0.35, colors=brewer.pal(8, "Dark2"))
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-2.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 -   Three words
 
@@ -144,7 +189,7 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 -   four words
 
@@ -164,6 +209,87 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+remove "equality"
+-----------------
+
+``` r
+word = c("race", 
+         "age", 
+         "religion", 
+         "color", 
+         "equal", 
+         "opportunity", 
+         "employer",
+         "employment", 
+         "sex", 
+         "gender", 
+         "sexual", 
+         "applicant",
+         "applicants", 
+         "qualification", 
+         "qualifications", 
+         "qualified", 
+         "candidate", 
+         "national", 
+         "regard", 
+         "identity", 
+         "veteran", 
+         "orientation", 
+         "criminal", 
+         "minority", 
+         "marital", 
+         "description")
+eq_com = data.frame(
+  word = word,
+  lexicon = rep("SMART", length(word))
+)
+
+keep_letter_stop_words = 
+  keep_letter_stop_words %>% 
+  full_join(eq_com, key = "word")
+```
+
+``` r
+inspection_words = 
+  datascience %>% 
+  unnest_tokens(word, description) %>% 
+  anti_join(x = ., keep_letter_stop_words)
+
+inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 2) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  labs(y = "double world frequency") +
+  coord_flip()
+```
+
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+``` r
+inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 3) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  labs(y = "triple world frequency") +
+  coord_flip()
+```
+
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ### Comparing words across groups
