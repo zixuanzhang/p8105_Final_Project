@@ -93,10 +93,11 @@ skill_new = skill_new %>%
   as.tibble() %>% 
   cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artifical Intelligence"), .$value) %>% 
   select(skills, sum = value) %>% 
-  `row.names<-.default`(1:9)
+  `row.names<-.default`(1:9) %>% 
+  mutate(skills = fct_reorder(skills, sum))
   
 # use packege`packcircles` to make bubble plot
-packing <- circleProgressiveLayout(skill_new)
+packing <- circleProgressiveLayout(skill_new$sum)
 dat.gg <- circleLayoutVertices(packing)
 
 plot_df <- cbind(skill_new, packing) 
@@ -104,18 +105,15 @@ plot_df <- cbind(skill_new, packing)
 plot_df$text2 <- paste0(plot_df$skills,"\n",plot_df$sum)
 
 ggplot(data = dat.gg) +
-  geom_polygon(aes(x, y, group = id, fill =  factor(id)), color = "white", show.legend = FALSE) +
+  geom_polygon(aes(x, y, group = id, fill =  id), show.legend = FALSE) +
   scale_y_reverse() +
   coord_equal() +
   geom_text(data = plot_df, aes(x, y,label = text2)) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.ticks.y = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank()
-    )
+  scale_fill_distiller(palette = "RdYlBu") +
+  coord_flip() +
+  theme_void()
 ```
+
+    ## Coordinate system already present. Adding new coordinate system, which will replace the existing one.
 
 ![](tools_and_skills_files/figure-markdown_github/unnamed-chunk-5-1.png)
