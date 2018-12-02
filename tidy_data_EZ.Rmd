@@ -108,7 +108,11 @@ inspection_words %>%
   geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
   labs(y = "double world frequency") +
   coord_flip()
+```
 
+word cloud
+
+``` {r, dpi = 300}
 word_cloud2 <- inspection_words %>%
   nest(word) %>%
   mutate(text = map(data, unlist), 
@@ -120,6 +124,16 @@ word_cloud2 <- inspection_words %>%
 
 wordcloud(words = word_cloud2$word, freq = word_cloud2$n, random.order=FALSE,
           rot.per=0.35, colors=brewer.pal(8, "Dark2"))
+```
+
+treemap for related background
+
+```{r}
+word_cloud2[1:10,] %>% 
+  treemap(index = "word", 
+          vSize = "n", 
+          type = "index",
+          vColor = brewer.pal(10, "Dark2"))
 ```
 
 *  Three words
