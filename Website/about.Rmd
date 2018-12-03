@@ -1,0 +1,60 @@
+---
+title: "About the Project"
+output: 
+  html_document:
+    self_contained: no
+    highlight: haddock
+    toc: true
+    toc_float:
+      collapse: true
+      smooth_scroll: false
+      author: "Shan Jiang(sj2921), Jiayi Shen (js5354), Jie Yu (jy2944), Eleanor Zhang (zz2602), Guojing Wu (gw2383)"
+      date: "December 6, 2017"
+      
+---
+ 
+```{r setOptions, include=FALSE}
+
+library(googleVis)
+op <- options(gvis.plot.tag = 'chart')
+```
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6, fig.asp = .6, out.width = "90%")
+options(knitr.table.format = "html") 
+```
+
+```{r libraries, echo=FALSE}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+library(plotly)
+library(stringr)
+library(plotly)
+library(readr)
+library(timevis)
+library(XML)
+library(ggmap)
+library(leaflet)
+library(splitstackshape)
+library(purrr)
+library(DT)
+library(expss)
+
+suppressPackageStartupMessages(library(googleVis)) 
+
+```
+
+```{r options, warning = FALSE, results='hide'}
+
+op <- options(gvis.plot.tag ='chart')
+source("../functions.R")
+```
+
+
+
+For further details and a complete discussion of all analyses and results please refer to the `analysis.html` file associated with the code in `analysis.Rmd`. These files can be accessed at our [GitHub page](). 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/9KN3wHJv8DA" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+
