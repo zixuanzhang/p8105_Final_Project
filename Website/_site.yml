@@ -1,0 +1,21 @@
+name: "Shan Jiang"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "About"
+      href: about.html
+    - text: "Plotly"
+      href: code_page.html
+    - text: "CV"
+      href: cv.html
+    - icon: fa-envelope fa-lg
+      href: mailto:<sj2921@cumc.columbia.edu>
+    - icon: fa-github fa-lg
+      href: http://github.com/shanjiang21/
+      
+# Includes an icon in the footer for each username you enter
+
+output:
+  html_document:
+    theme: yeti

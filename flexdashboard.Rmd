@@ -65,7 +65,7 @@ g <- list(
 ```
 
 
-```{r message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
                  "[Ss]tatistic", 
                  "[Mm]ath", 
@@ -95,6 +95,7 @@ for (i in c(1:length(pattern_bg))) {
   bg_freq$freq[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
 }
 
+
 ```
 
 Column {data-width=650}
@@ -121,11 +122,7 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
-bg_freq %>% 
-  treemap(index = "index", 
-          vSize = "freq", 
-          type = "index",
-          palette = "Blues")
+
 
 ```
 
