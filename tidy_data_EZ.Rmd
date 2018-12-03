@@ -15,13 +15,17 @@ library(tidytext)
 library(wordcloud)
 library(RColorBrewer)
 library(treemap)
+library(plotly)
 theme_set(theme_bw())
 ```
 
 ## read data (existing)
 
 ```{r}
-datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
+#datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
+  #filter(!is.na(position))
+
+datascience <- read_csv("./data/ds_500.csv") %>% 
   filter(!is.na(position))
 ```
 
@@ -43,6 +47,33 @@ datascience %>%
   geom_bar() + 
   labs(title = "Minimum degree requirement")
 ```
+
+
+stacked bar chart
+
+```{r}
+datascience %>% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other")),
+         flag = as.factor(flag)) %>% 
+  # ggplot(aes(x = degree)) + geom_bar(aes(fill = flag))
+  count(flag, degree) %>% 
+  mutate(flag = ifelse(flag == 1, "top500", "non_top500")) %>% 
+  spread(key = flag, value = n) %>% 
+  plot_ly(x = ~degree, y = ~top500, type = "bar", name = "top500") %>% 
+  add_trace(y = ~non_top500, name = "non top500") %>% 
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+  
+
+p <- plot_ly(data, x = ~Animals, y = ~SF_Zoo, type = 'bar', name = 'SF Zoo') %>%
+  add_trace(y = ~LA_Zoo, name = 'LA Zoo') %>%
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+  
+```
+
 
 ## tree map for related background
 
