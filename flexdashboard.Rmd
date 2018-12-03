@@ -1,0 +1,100 @@
+---
+title: "flexdashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(readxl)
+library(readr)
+library(rvest)
+library(stringr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(treemap)
+library(ggplot2)
+library(ggmap)
+library(plotly)
+
+state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
+  janitor::clean_names() %>% 
+  mutate(a_mean = as.numeric(a_mean)) %>%
+  mutate(tot_emp = as.numeric(tot_emp))
+
+## Missing data replaced by mean salary in that specific detailed field for annual salary 
+state_df <-  
+  state_17 %>% 
+  mutate(a_mean = ifelse(is.na(a_mean), mean(a_mean, na.rm = TRUE), a_mean)) %>% 
+  mutate(state = tolower(state))    ## To match the case of state names in 2 dataframe 
+
+
+## Add state salary df.
+state_salary <- 
+  state_df %>%
+  filter(str_detect(occ_code, "15-0000") ) %>% 
+  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
+  group_by(state) %>%
+  summarize(abb = st,
+            mean_salary = a_mean,
+            mean_total = tot_emp,
+            mean_job = round(as.numeric(jobs_1000), 2))
+
+
+ 
+## By using map plotly
+states_map <- map_data("state")
+
+state_salary$hover <- 
+  with(state_salary, paste(
+    "Salary: $", round(mean_salary, 2),'<br>',
+            "Total:", mean_total, '<br>',
+            "DS Jobs per 1000:", mean_job,'<br>'))
+
+# give state boundaries a white border
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+plot_geo(state_salary, locationmode = 'USA-states') %>%
+  add_trace(
+    z = ~ mean_salary, text = ~hover, locations = ~ abb,
+    color = ~ mean_salary, colors = 'Oranges'
+  ) %>%
+  colorbar(title = "$:USD") %>%
+  layout(
+    title = '2017 US Data Science jobs info by State<br>Source: <a href="https://www.bls.gov/oes/tables.htm">BLS</a>',
+    titlefont = 8,
+    geo = g
+  )
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
