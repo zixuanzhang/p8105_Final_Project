@@ -1,0 +1,48 @@
+---
+title: "Untitled"
+author: "Jie Yu"
+date: "2018年12月2日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+
+```{r}
+datascience <- read_csv("./data/datascience_market/alldata.csv")
+
+fortune_500 <- read_csv("./data/Fortune_500_Corporate_Headquarters.csv")
+
+
+df_datascience = datascience %>% 
+  mutate(company = str_to_lower(company)) %>% 
+  filter(!is.na(description))
+
+df_fortune_500 = fortune_500 %>% 
+  janitor::clean_names() %>% 
+  mutate(name = str_to_lower(name))
+
+
+index.1 <- sapply(df_datascience$company, grep, df_fortune_500$name)
+
+index.2 <- sapply(seq_along(index.1), function(i) rep(i, length(index.1[[i]])))
+
+# Top 500 largest industrial corporations 
+ds_500 = cbind(df_datascience[unlist(index.2),,drop = FALSE], df_fortune_500[unlist(index.1),,drop = FALSE]) %>% 
+  select(position, company, description) %>% 
+  filter(!is.na(description))
+
+ds_500 %>% write.csv("./data/ds_500.csv")
+
+# NotTop 500
+ds_not_500 <- df_datascience %>%
+    filter(!company %in% ds_500$company) %>% 
+    filter(!is.na(description))
+
+ds_not_500 %>% write.csv("./data/ds_not_500.csv")
+```
+
