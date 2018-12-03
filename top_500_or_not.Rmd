@@ -27,9 +27,11 @@ df_fortune_500 = fortune_500 %>%
   mutate(name = str_to_lower(name))
 
 
-index.1 <- sapply(df_datascience$company, grep, df_fortune_500$name)
+index.1 <- sapply(df_fortune_500$name, grep, df_datascience$company)
 
-index.2 <- sapply(seq_along(index.1), function(i) rep(i, length(index.1[[i]])))
+flag = rep(0, length(df_datascience$position))
+flag[unlist(index.1)] = 1
+df_datascience = cbind(df_datascience, flag)
 
 # Top 500 largest industrial corporations 
 ds_500 = cbind(df_datascience[unlist(index.2),,drop = FALSE], df_fortune_500[unlist(index.1),,drop = FALSE]) %>% 
