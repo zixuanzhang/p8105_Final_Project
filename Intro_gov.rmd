@@ -15,12 +15,12 @@ library(readxl)
 
 ```
 
-
+## Macroeconomic Context
 ```{r}
 
-national_17 <- read_excel("data/oesm17nat/national_M2017_dl.xlsx")
+national_17 <- read_excel("data/national_10yr/national_2008.xls")
 
-national_17 %>% View()
+national_17 %>% 
 
 national_17 = national_17 %>% 
               janitor::clean_names() %>% 
@@ -75,7 +75,7 @@ state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>%
 
 ## Missing data replaced by mean salary in that specific detailed field for annual salary 
 state_df <-  
-  state_17 %>% 
+  state_17 %>% View()
   mutate(a_mean = ifelse(is.na(a_mean), mean(a_mean, na.rm = TRUE), a_mean)) %>% 
   mutate(state = tolower(state))    ## To match the case of state names in 2 dataframe 
 ```
@@ -97,25 +97,17 @@ Then we only keep the computer and mathmatician job classification in our data.
 ### spatial map 
 
 ```{r}
-
+## Add state salary df.
 state_salary <- 
   state_df %>%
-  filter(str_detect(occ_code, "^[1][5]") ) %>% 
+  filter(str_detect(occ_code, "15-0000") ) %>% 
   filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
   group_by(state) %>%
-  summarize(mean_salary = mean(a_mean))
-  
+  summarize(abb = st,
+            mean_salary = a_mean,
+            mean_total = tot_emp,
+            mean_job = round(as.numeric(jobs_1000), 2))
 
-statisticians_df = 
-  state_df %>%
-  filter(str_detect(occ_code, "^[1][5]") ) %>% 
-  filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
-  group_by(state, occ_title) %>% 
-  filter(occ_title == "Statisticians")
-
-place_df = statisticians_df %>% 
-   select(state, occ_code, occ_title,tot_emp, a_mean, a_median) 
-  
 ```
 
 Now we have `nrow(state_clean)` entries in our dataframe. 
@@ -127,63 +119,51 @@ library(ggplot2)
 library(ggmap)
 library(fiftystater)
 library(plotly)
-
- p = state_salary %>% 
-  ggplot(aes(map_id = state)) + 
-  # map points to the fifty_states shape data
-  geom_map(aes(fill =  mean_salary), map = fifty_states) + 
-  expand_limits(x = fifty_states$long, y = fifty_states$lat) +
-  coord_map() +
-  scale_x_continuous(breaks = NULL) + 
-  scale_y_continuous(breaks = NULL) +
-  labs(x = "", y = "")
- 
-
-ggplotly(p)
  
 ## By using map plotly
 states_map <- map_data("state")
 
-state_salary  = state_salary %>% 
-  mutate(text_label = str_c("Salary: $", round(mean_salary, 2))) 
+state_salary$hover <- 
+  with(state_salary, paste(
+    "Salary: $", round(mean_salary, 2),'<br>',
+            "Total:", mean_total, '<br>',
+            "DS Jobs per 1000:", mean_job,'<br>'))
 
- g <- ggplot(state_salary, aes(map_id = state)) + 
-  # map points to the fifty_states shape data
-  geom_map(aes(fill = mean_salary), map = states_map) + 
-  expand_limits(x = states_map$long, y = states_map$lat) +
-  scale_x_continuous(breaks = NULL) + 
-  scale_y_continuous(breaks = NULL) +
-  labs(x = "", y = "")  
+# give state boundaries a white border
+l <- list(color = toRGB("white"), width = 2)
+# specify some map projection/options
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
 
-ggplotly(g)
+p <- plot_geo(state_salary, locationmode = 'USA-states') %>%
+  add_trace(
+    z = ~ mean_salary, text = ~hover, locations = ~ abb,
+    color = ~ mean_salary, colors = 'Oranges'
+  ) %>%
+  colorbar(title = "$:USD") %>%
+  layout(
+    title = '2017 US Data Science jobs info by State<br>Source: <a href="https://www.bls.gov/oes/tables.htm">BLS</a>',
+    titlefont = 8,
+    geo = g
+  )
 
 ```
 
 
+
+## Add team logo 
 ```{r}
-library(hexSticker)
-sticker(expression(plot(cars, cex=.5, cex.axis=.5, mgp=c(0,.3,0), xlab="", ylab="")),
-        package="hexSticker", p_size=8, s_x=1, s_y=.8, s_width=1.2, s_height=1,
-        filename= "./data/")
+sticker(imgurl2, 
+        package = "DS Job Outlook", 
+        p_size = 6, s_x = 1.05, s_y = 0.75, s_width =.8,
+        h_color = "#000000",  p_color = "black",
+        filename = "./data/Figures/team_logo2.png")
+
+
 ```
 
-
-```{r}
-
-us_state_map <- map_data("state") %>%
-  as_data_frame()
- 
-ggplot(data = us_state_map) + 
-  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
-  coord_quickmap() +
-  guides(fill = FALSE) 
-
-
-plot_usmap(data = state_clean, values = "pop_2015", lines = "red") + 
-  scale_fill_continuous(
-    low = "white", high = "red", name = "Population (2015)", label = scales::comma
-  ) + theme(legend.position = "right")
-
-citation("ggmap")
-```
 
