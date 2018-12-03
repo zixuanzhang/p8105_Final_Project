@@ -20,8 +20,9 @@ library(treemap)
 library(ggplot2)
 library(ggmap)
 library(plotly)
-library(d3treeR)
 library(treemap)
+library(d3treeR)
+# devtools::install_github("timelyportfolio/d3treeR")
 
 state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
   janitor::clean_names() %>% 
