@@ -28,6 +28,10 @@ Intended Final Product
 
 #### Part I Background and Introduction
 
+1.  Data science vs. other occupations
+
+2.  geographic distribution of mean total employment, mean salary by state, mean job per thousands
+
 Background check of the job market dynamics for the past decade:
 
 -   Graph : Computer and mathematical occupations trend from 2007 to 2017
@@ -44,21 +48,21 @@ Background check of the job market dynamics for the past decade:
 
 ##### Descriptive Part (Table or Graph)
 
--   Degree preference and major preference?
+-   Degree preference? (bar)
 
--   Degree preference and major preference?
+-   master
+-   phd
+-   high school
+-   bachelor
+-   other
 
--   What programming / statistical tools are most required?
+-   Related background fields (tree map)
 
--   What kinds of data science skills are most in need? (data analysis, machine learning, data visualization, etc.)
+-   What programming / statistical tools are most required? (bar)
 
--   Comparisons among job titles -- Data Engineer vs. Data Scientist vs. Data Analyst:
-    1)Degree and majors
-    2)Required tools
-    3)Required skills
-    4)Years of experiences
+-   What kinds of data science skills are most in need? (bubble plot)
 
--   Comparison of requirements between 500 largest industrial corporations in U.S. and other companies.
+-   Comparison of requirements between "top 100" largest industrial corporations and non "top 100" companies in U.S. (dashboard)
 
 Anticipated Data Source
 -----------------------
