@@ -44,8 +44,6 @@ state_salary <-
             mean_total = tot_emp,
             mean_job = round(as.numeric(jobs_1000), 2))
 
-
- 
 ## By using map plotly
 states_map <- map_data("state")
 
@@ -64,6 +62,39 @@ g <- list(
   showlakes = TRUE,
   lakecolor = toRGB('white')
 )
+```
+
+
+```{r message=FALSE, warning=FALSE}
+pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
+                 "[Ss]tatistic", 
+                 "[Mm]ath", 
+                 "[Qq]uantitative", 
+                 "[Ee]conomic", 
+                 "[Bb]iolog", 
+                 "[Bb]iostatis", 
+                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+                 "[Cc]hemical [Ee]ngineering")
+name_bg = c("CS", 
+          "Statistics", 
+          "Mathematics", 
+          "Quantitative", 
+          "Economics", 
+          "Biology", 
+          "Biostatistics", 
+          "DS", 
+          "Engineer")
+
+bg_freq = data.frame(
+  background = pattern_bg, 
+  index = name_bg, 
+  freq = rep(0, length(pattern_bg))
+)
+
+for (i in c(1:length(pattern_bg))) {
+  bg_freq$freq[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+}
+
 ```
 
 Column {data-width=650}
@@ -90,6 +121,11 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
+bg_freq %>% 
+  treemap(index = "index", 
+          vSize = "freq", 
+          type = "index",
+          palette = "Blues")
 
 ```
 
