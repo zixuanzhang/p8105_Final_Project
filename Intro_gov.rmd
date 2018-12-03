@@ -113,7 +113,7 @@ statisticians_df =
   group_by(state, occ_title) %>% 
   filter(occ_title == "Statisticians")
 
-place_df = statisticians %>% 
+place_df = statisticians_df %>% 
    select(state, occ_code, occ_title,tot_emp, a_mean, a_median) 
   
 ```
@@ -128,27 +128,29 @@ library(ggmap)
 library(fiftystater)
 library(plotly)
 
- p = ggplot(state_salary, aes(map_id = state)) + 
+ p = state_salary %>% 
+  ggplot(aes(map_id = state)) + 
   # map points to the fifty_states shape data
   geom_map(aes(fill =  mean_salary), map = fifty_states) + 
   expand_limits(x = fifty_states$long, y = fifty_states$lat) +
   coord_map() +
   scale_x_continuous(breaks = NULL) + 
   scale_y_continuous(breaks = NULL) +
-  labs(x = "", y = "")  +
-  guides(fill = guide_colorbar(barwidth = 18, barheight = .5)) +
-  theme(legend.position = "bottom", 
-        panel.background = element_blank())  +
-  facet_wrap( ~ variable) + theme_void()
+  labs(x = "", y = "")
+ 
 
+ggplotly(p)
  
 ## By using map plotly
 states_map <- map_data("state")
 
-g <- ggplot(state_salary, aes(map_id = state)) + 
+state_salary  = state_salary %>% 
+  mutate(text_label = str_c("Salary: $", round(mean_salary, 2))) 
+
+ g <- ggplot(state_salary, aes(map_id = state)) + 
   # map points to the fifty_states shape data
-  geom_map(aes(fill =  mean_salary), map = states_map) + 
-  expand_limits(x = states_map$long, y = states_map$lat) 
+  geom_map(aes(fill = mean_salary), map = states_map) + 
+  expand_limits(x = states_map$long, y = states_map$lat) +
   scale_x_continuous(breaks = NULL) + 
   scale_y_continuous(breaks = NULL) +
   labs(x = "", y = "")  

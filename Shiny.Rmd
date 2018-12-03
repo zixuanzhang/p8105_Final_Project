@@ -9,8 +9,17 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(ggplot2)
+library(ggmap)
+library(fiftystater)
+library(plotly)
+library(tidyverse)
 
-salary_data <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
+library(shiny)
+library(readxl)
+
+
+salary_data %>% 
   janitor::clean_names() %>% 
   mutate(state = tolower(state)) %>%    
   mutate(a_mean = as.numeric(a_mean)) %>%
@@ -20,7 +29,9 @@ salary_data <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>%
   filter(!state %in% c("Puerto Rico","Guam", "Virgin Islands")) %>% 
   group_by(state) %>%
   summarize(mean_salary = mean(a_mean))
-  
+
+salary_data <- salary_data %>% 
+  mutate(text_label = str_c("Salary: $", mean_salary))   
 ```
 
 Column {.sidebar}
@@ -50,7 +61,14 @@ Column {data-width=650}
 ### Chart A
 
 ```{r}
-
+renderPlotly({
+  ggplotly(
+  ggplot( state_salary, aes(map_id = state)) + 
+  # map points to the fifty_states shape data
+  geom_map(aes(fill =  mean_salary), map = states_map) + 
+  expand_limits(x = states_map$long, y = states_map$lat) 
+  )
+})
 
 ```
 
