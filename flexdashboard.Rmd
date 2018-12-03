@@ -20,6 +20,8 @@ library(treemap)
 library(ggplot2)
 library(ggmap)
 library(plotly)
+library(d3treeR)
+library(treemap)
 
 state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
   janitor::clean_names() %>% 
@@ -65,7 +67,10 @@ g <- list(
 ```
 
 
-```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r message=FALSE, warning=FALSE, include=F}
+datascience <- read_csv("./data/ds_500.csv") %>% 
+  filter(!is.na(position))
+
 pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
                  "[Ss]tatistic", 
                  "[Mm]ath", 
@@ -88,14 +93,31 @@ name_bg = c("CS",
 bg_freq = data.frame(
   background = pattern_bg, 
   index = name_bg, 
-  freq = rep(0, length(pattern_bg))
+  freq_total = rep(0, length(pattern_bg)), 
+  top500 = rep(0, length(pattern_bg)), 
+  nontop500 = rep(0, length(pattern_bg)) 
 )
 
 for (i in c(1:length(pattern_bg))) {
-  bg_freq$freq[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$freq_total[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$top500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
+  bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
 }
 
+bg_freq = 
+  bg_freq %>% 
+  gather(key = subgroup, value = freq, top500:nontop500)
 
+p = 
+treemap(
+    bg_freq,
+    index = c("index", "subgroup"), 
+    vSize = "freq", 
+    vColor = "freq", 
+    type = "value",
+    palette = "Blues", 
+    fontsize.labels = 20
+    )
 ```
 
 Column {data-width=650}
@@ -122,8 +144,7 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
-
-
+d3tree2(p, rootname = "General")
 ```
 
 ### Chart C
