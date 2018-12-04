@@ -25,8 +25,10 @@ theme_set(theme_bw())
 #datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
   #filter(!is.na(position))
 
-datascience <- read_csv("./data/ds_500.csv") %>% 
-  filter(!is.na(position))
+datascience <- read_csv("./data/ds_500.csv")
+  # filter(!is.na(position))
+head(datascience)
+anyNA(datascience$position)
 ```
 
 ## minimum requirement of degree
@@ -66,11 +68,33 @@ datascience %>%
   plot_ly(x = ~degree, y = ~top500, type = "bar", name = "top500") %>% 
   add_trace(y = ~non_top500, name = "non top500") %>% 
   layout(yaxis = list(title = 'Count'), barmode = 'stack')
-  
 
-p <- plot_ly(data, x = ~Animals, y = ~SF_Zoo, type = 'bar', name = 'SF Zoo') %>%
-  add_trace(y = ~LA_Zoo, name = 'LA Zoo') %>%
-  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+datascience_OR <- datascience %>% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other")),
+         flag = as.factor(flag)) %>% 
+  # ggplot(aes(x = degree)) + geom_bar(aes(fill = flag))
+  count(flag, degree) %>% 
+  mutate(flag = ifelse(flag == 1, "top500", "non_top500")) %>% 
+  spread(key = flag, value = n)
+
+datascience_OR %>% 
+  mutate(
+    non_top500_odds = (non_top500 + 1) / (sum(non_top500) + 1),
+    top500_odds  = (top500 + 1) / (sum(top500) + 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(degree = fct_reorder(degree, log_OR)) %>%
+  ggplot(aes(degree, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+  
   
 ```
 
