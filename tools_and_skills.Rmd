@@ -1,20 +1,27 @@
 ---
 title: "tools and skills variable"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
 library(tidyverse)
 library(stringr)
 
 library(packcircles) # bubble plot
 
+library(plotly)
+
 theme_set(theme_bw())
 ```
 
 ```{r}
-datascience <- read_csv("./data/datascience_market/alldata.csv")
+datascience <- read_csv("./data/ds_500.csv")
 ```
 
 ### Tools
@@ -69,6 +76,29 @@ tool_new %>%
     axis.title.y = element_blank())
 ```
 
+top 500 v.s. not top 500: Tool
+
+```{r}
+tool_new %>% 
+  gather(key = tool, value = value, python:linux) %>%
+  filter(value == 1) %>% 
+  count(flag, tool) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500"),
+    tool = str_to_title(tool),
+    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  mutate(sum = non_top500 + top500,
+         tool = fct_reorder(tool, sum)) %>% 
+  plot_ly(y = ~tool, x = ~top500, type = "bar", name = "Top 500", color = "green") %>% 
+  add_trace(x = ~non_top500, name = "Non-top 500", color = "blue") %>%
+  layout(
+    xaxis = list(title = 'Count'), barmode = 'stack',
+    yaxis = list(title = "Tool")
+    ) 
+```
 
 ### Skills
 
@@ -121,7 +151,6 @@ ggplot(data = dat.gg) +
   scale_fill_distiller(palette = "RdYlBu") +
   coord_flip() +
   theme_void()
-  
 ```
 
 
