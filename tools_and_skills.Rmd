@@ -79,6 +79,10 @@ tool_new %>%
 top 500 v.s. not top 500: Tool
 
 ```{r}
+ax <- list(
+  title = ""
+)
+
 tool_new %>% 
   gather(key = tool, value = value, python:linux) %>%
   filter(value == 1) %>% 
@@ -92,11 +96,12 @@ tool_new %>%
   spread(key = flag, value = n) %>% 
   mutate(sum = non_top500 + top500,
          tool = fct_reorder(tool, sum)) %>% 
-  plot_ly(y = ~tool, x = ~top500, type = "bar", name = "Top 500", color = "green") %>% 
-  add_trace(x = ~non_top500, name = "Non-top 500", color = "blue") %>%
+  plot_ly(.) %>% 
+  add_trace(y = ~tool, x = ~top500, type = "bar", name = "Top 500", marker = list(color = 'blue-teal')) %>%
+  add_trace(y = ~tool, x = ~non_top500, type = "bar", name = "Non-top 500", marker = list(color = 'lightblue')) %>%
   layout(
     xaxis = list(title = 'Count'), barmode = 'stack',
-    yaxis = list(title = "Tool")
+    yaxis = ax
     ) 
 ```
 
@@ -120,26 +125,29 @@ skill_new = datascience %>%
     # interpersonal skills
     interpersonal = ifelse(str_detect(.$description,  c("[Ii]nterpersonal [Ss]kill|[Cc]ommunication|[Ll]istening [Ss]kill|[Tt]eam [Ww]orking|[Nn]egotiation|[Ee]motional [Ii]ntelligence|[Cc]onflict [Rr]esolution|[Pp]roblem [Ss]olving|[Dd]ecision [Mm]aking")) == TRUE, 1, 0),
     # artifical intelligence
-    arti_inte = ifelse(str_detect(.$description,  c("\\bAI\\b|[Nn]eural [Nn]etwork")) == TRUE, 1, 0)
+    arti_inte = ifelse(str_detect(.$description,  c("\\bAI\\b|[Nn]eural [Nn]etwork")) == TRUE, 1, 0),
+    writing = ifelse(str_detect(.$description,  c("[Ww]riting")) == TRUE, 1, 0)
   )
 ```
 
+Skills (bubble plot)
+
 ```{r fig.width = 8, fig.height = 6}
-skill_new = skill_new %>% 
-  select(machine_learning:arti_inte) %>% 
+skill_bubble = skill_new %>% 
+  select(machine_learning:writing) %>% 
   # sum of each column
   colSums(., na.rm = TRUE) %>% 
   as.tibble() %>% 
-  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artifical Intelligence"), .$value) %>% 
+  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artifical Intelligence", "Writing Skills"), .$value) %>% 
   select(skills, sum = value) %>% 
-  `row.names<-.default`(1:9) %>% 
+  `row.names<-.default`(1:10) %>% 
   mutate(skills = fct_reorder(skills, sum))
   
 # use packege`packcircles` to make bubble plot
-packing <- circleProgressiveLayout(skill_new$sum)
+packing <- circleProgressiveLayout(skill_bubble$sum)
 dat.gg <- circleLayoutVertices(packing)
 
-plot_df <- cbind(skill_new, packing) 
+plot_df <- cbind(skill_bubble, packing) 
 
 plot_df$text2 <- paste0(plot_df$skills,"\n",plot_df$sum)
 
@@ -151,6 +159,32 @@ ggplot(data = dat.gg) +
   scale_fill_distiller(palette = "RdYlBu") +
   coord_flip() +
   theme_void()
+```
+
+top 500 v.s. not top 500: Skills (bar chart)
+
+```{r}
+skill_new %>% 
+  gather(key = skill, value = value, machine_learning:writing) %>%
+  filter(value == 1) %>% 
+  count(flag, skill) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500")
+         ) %>% 
+  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artifical Intelligence", "Writing Skills")) %>% 
+  select(flag, skills, n) %>%
+  spread(key = flag, value = n) %>% 
+  mutate(sum = non_top500 + top500,
+         skills = fct_reorder(skills, sum)) %>% 
+  plot_ly(.) %>% 
+  add_trace(y = ~skills, x = ~top500, type = "bar", name = "Top 500", width = .6, marker = list(color = 'lightseagreen')) %>%
+  add_trace(y = ~skills, x = ~non_top500, type = "bar", name = "Non-top 500", width = .6, marker = list(color = ' lightgreen')) %>%
+  layout(
+    yaxis = ax,
+    xaxis = list(title = 'Count'), barmode = 'stack',
+    bargap = 0.05
+    ) 
 ```
 
 
