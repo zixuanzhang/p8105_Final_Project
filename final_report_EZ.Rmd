@@ -166,12 +166,9 @@ We observed "5 year experience", "hands experience", "master degree", "verbal wr
 
 
 
-__Triple word frequency__:
+__Triple word and quadruple frequency__:
 
-
-
-
-Next, we did exploratory on word frequency 
+Next, we set the window size to be three and four repectively, count the word frequency and display top 50 phrases. Most the information standng out here is about sex orientation, gender identity, equal employment
 
 
 
