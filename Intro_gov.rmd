@@ -23,7 +23,7 @@ library(readxl)
 #read national Occupational Employment Statistics data
 read_national_data = function(file_yr) {
   df = 
-  read_excel(str_c("data/national_10yr/national_", file_yr, ".xlsx")) %>% 
+  read_excel(str_c("data/national_10yr/national_", file_yr, ".xls")) %>% 
   janitor::clean_names() %>% 
   filter(str_detect(occ_code, "0000$")) %>%
   mutate(year = file_yr) %>% 
@@ -39,35 +39,46 @@ read_national_data = function(file_yr) {
 #aggregate all 10 years' data in one data frame
 national_df = map_df(2008:2017, read_national_data) %>% unnest()
 
-#what are the 10 major occupation fields with most total emploment in 2017?
-national_df %>% filter(year == 2017, occ_code != "00-0000") %>% arrange(desc(tot_emp)) %>% head(n=10)
+#tidy occupation titles
+national_df = 
+national_df %>% 
+  mutate(occ_title = tolower(occ_title)) %>% 
+  mutate(occ_title = str_replace(occ_title, 
+                                 "computer and mathematical science occupations", 
+                                 "computer and mathematical occupations"),
+         occ_title = str_replace(occ_title, 
+                                 "community and social service occupations", 
+                                 "community and social services occupations"),
+         occ_title = str_replace(occ_title, 
+                                 "healthcare practitioner and technical occupations", 
+                                 "healthcare practitioners and technical occupations")) 
 
-#Compare the 10-year mean annual salary trend in these major fields
+#plotting the 10-yr trend of median annual salary across all major fields.
 national_df %>%
-  filter(occ_code %in% c("00-0000", 
-                         "43-0000",
-                         "35-0000",
-                         "53-0000",
-                         "51-0000",
-                         "25-0000",
-                         "29-0000",
-                         "15-0000")) %>% 
+  filter(occ_code != "15-0000") %>% 
   group_by(year) %>% 
   arrange(desc(tot_emp)) %>%
-  ggplot(aes(x = year, y = a_mean, color = occ_code))+
+  ggplot(aes(x = year, y = a_median, color = occ_title))+
   geom_line()+
   geom_point()+
+  geom_line(data = filter(national_df, occ_code == "15-0000"), color = "black")+
+  geom_point(data = filter(national_df, occ_code == "15-0000"), color = "black")+
   labs(x = "Year",
        y = "Mean Annual Salary in dollars",
-       title = "10-year trend of mean annual salary change across different occupations in the U.S") +
-  scale_colour_discrete(name ="Occupation\nTitle",
-                      breaks = c("00-0000", "13-0000", "15-0000", "17-0000", "19-0000", "29-0000", "41-0000"),
-                      labels = c("All Occupations", "Business and Financial Operations", "Computer and Mathematical", "Architecture and Engineering", "Life, Physical, and Social Science", "Healthcare Practitioners and Technical", "Sales and Related"))
+       color = "Occupation\nTitle",
+       title = "10-year trend of median annual salary change across different occupations in the U.S",
+       caption = "(based on data from Bureau of Labor Statistics)") +
+  theme(legend.position="bottom", 
+        legend.text = element_text(size=8))+
+  guides(colour = guide_legend(nrow = 8))
 
 ```
 
 
 ```{r plotting increment rate}
+#create color panel for plotting
+cbbPalette = c( "#CC6666", "#56B4E9", "#009E73","#000000", "#F0E442", "#0072B2", "#E69F00")
+
 #Compare the increment rate of total employment in our selected occupational fields
 national_df %>% 
   group_by(occ_code) %>% 
@@ -81,15 +92,16 @@ national_df %>%
                          "29-0000",
                          "41-0000",
                          "00-0000")) %>%
-  ggplot(aes(x = year, y = increment_p, color = occ_code))+
+  ggplot(aes(x = year, y = increment_p*100, color = occ_title))+
   geom_point(aes(size = a_median,  alpha=0.4))+
-  scale_size(range = c(0,11))+
+  scale_size(range = c(0,5))+
   geom_line()+
-  labs(size = "Median Annual Salary")+
-  scale_colour_discrete(name ="Occupation\nTitle",
-                      breaks = c("00-0000", "13-0000", "15-0000", "17-0000", "19-0000", "29-0000", "41-0000"),
-                      labels = c("All Occupations", "Business and Financial Operations", "Computer and Mathematical", "Architecture and Engineering", "Life, Physical, and Social Science", "Healthcare Practitioners and Technical", "Sales and Related")) +
-  scale_alpha(guide = 'none')
+  labs(size = "Median Annual Salary",
+       color = "Occuputation Title",
+       x = "Year", 
+       y = "Annual percentage increase(%) in total empolyment") + 
+  scale_alpha(guide = 'none')+
+  scale_colour_manual(values=cbbPalette)
 
 ```
 
