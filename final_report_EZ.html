@@ -149,6 +149,7 @@ library(plotly)</code></pre>
 <div id="related-work" class="section level2">
 <h2>Related work</h2>
 <p>We are inspired by the great analysis work done and the blog edited by Shanshan Lu posted on Kaggle. We shared some common interest in this dataset in terms of a wide array of qualifiers for getting a job in the field of data science. Beyond that, we launched our exploration from a general trend finding through data from <a href="https://www.bls.gov/oes/tables.htm">National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics</a>. Then we took a close at the data from Indeed job posting. As we noticed this data includes companies and industries at differentiated levels. We brought the types of companies onto the table and mined through if top 500 in US and non-top-500 companies have different expectations of their candidates.</p>
+<p>We are deeply sparked by what we have learned from the tidy text lecture from data science class. Given the nature of our dataset, more specifically the job description column in Indeed data set, is constitutes strings in R environment. This <code>tidy text</code> plays a critical role in assisting us to tidy and use word tokens as to count word or phrase frequencies.</p>
 </div>
 <div id="inital-questions" class="section level2">
 <h2>Inital questions</h2>
@@ -159,7 +160,7 @@ library(plotly)</code></pre>
 <li><p>National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics</p></li>
 <li><p>Indeed website job posting data</p></li>
 </ol>
-<p>This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company.</p>
+<p>This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company. We mainly squared at the job description column that contain information such as short description of company and position, requirement and route of application.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>The 500 Largest Industrial Corporations in the U.S., Published by Fortune magazine (updated by October 5, 2018)</li>
 </ol>
@@ -200,7 +201,9 @@ ds_not_500 %&gt;% write.csv(&quot;./data/ds_not_500.csv&quot;)</code></pre>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory analysis</h2>
-<p>The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs.</p>
+<div id="minimum-degree-requirement" class="section level4">
+<h4>Minimum degree requirement</h4>
+<p>The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs. Since the “degree” message is coded into different format in the job description column, we managed to be inclusive in this stage. We relied on <code>str_detect</code> function from <code>stringr</code> package and specify the terms we are looking for while excluding some unmeaningful expression in the script. Some job description contain multiple degree qualification such as “bachelor, master, or higher education”. We will count the minimum requirement.</p>
 <pre class="r"><code>pattern_Hi = &quot;[Hh]igh [Ss]chool&quot;
 pattern_Ba = &quot;[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree&quot;
 pattern_Ma = &quot;[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate&quot;
@@ -215,6 +218,40 @@ datascience %&gt;%
   ggplot(aes(x = degree)) + 
   geom_bar() + 
   labs(title = &quot;Minimum degree requirement&quot;)</code></pre>
+<p>In addition, we also count for degree requirement of top 500 industries and non-top-500 industries and add this layer of information into a stacked bar chart.</p>
+<pre class="r"><code>datascience %&gt;% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, &quot;high school&quot;,
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, &quot;bachelor&quot;,
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, &quot;master&quot;,
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, &quot;phd&quot;, &quot;other&quot;))))) %&gt;% 
+  mutate(degree = factor(degree, levels = c(&quot;high school&quot;, &quot;bachelor&quot;, &quot;master&quot;, &quot;phd&quot;, &quot;other&quot;)),
+         flag = as.factor(flag)) %&gt;% 
+  # ggplot(aes(x = degree)) + geom_bar(aes(fill = flag))
+  count(flag, degree) %&gt;% 
+  mutate(flag = ifelse(flag == 1, &quot;top500&quot;, &quot;non_top500&quot;)) %&gt;% 
+  spread(key = flag, value = n) %&gt;% 
+  plot_ly(x = ~degree, y = ~top500, type = &quot;bar&quot;, name = &quot;top500&quot;) %&gt;% 
+  add_trace(y = ~non_top500, name = &quot;non top500&quot;) %&gt;% 
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')</code></pre>
+<p>Observe:</p>
+<ul>
+<li>The majority of jobs requires a bachelor degree at least.</li>
+</ul>
+<p>Given we have about 7000 full job descriptions posted on Indeed by employers. We want to explore and visualize some key words that appear at high frequency across these description. As we expected, these key words might include information such as degree requirements, related background, working ethics and culture in the company. So we will count the word frequencies in terms of single word, double word, triple word and above. We are amazed to detect some words that are consistent with our expectation and those are not. So let’s start our journey through this!</p>
+<p><strong>Single word frequency</strong>:</p>
+<p>If we used the raw <code>stopword</code> data to clean the text, we will remove some software languages such as “R”, “C” or “C++”. Therefore we remove these stop words from the “removing” list.</p>
+<p>Observe:</p>
+<p>Not surprisingly, words such as “data”, “experience”, “team”, “research” and “development” rank the top frequency among all job descriptions. The single word mining does not provide much informative message because its lack of context. Things will get more intriguring as we increase the word frequency because words will start make sense when they become phrase.</p>
+<p><strong>Double word frequency</strong>:</p>
+<p>Raw:</p>
+<p>Now a few technology words going vibe on Internet outrun other phrases. Here we saw machine learning, data science, equal opportunity, computer science, communication skills, even San Francisco towards the end! These top 50 phrases generally can be categorized into software tools, interpersonal skills and sociogeographic status information, for example, gender identity and veterans status. Besides, some phrases captured are in redundant or not meaningful such as “religion sex” and “action employer”. Considering that our window size set to be 2 and the word tokens are separated into any two consecutive words in the text, not every output on the top rank will make perfect sense. Therefore we need to filter out some of those words and see what’s left out there on the rank.</p>
+<p>Since we know in advance that candidates’ knowledge backgrounds, set of skills and degree are critical factors in job application, for now we removed sociogeographic information from the description and expect to see the information we expect to see. So we display the top 50 words again after removing information such as race, sex, “requirement”, “qualification”, veteran status, marital status, etc.</p>
+<p>After removing:</p>
+<p>Observe:</p>
+<p>We observed “5 year experience”, “hands experience”, “master degree”, “verbal written”, “statistical analysis”. Hands on experience is a crital Five years of experience mentioned quite a lot in these descriptions.</p>
+<p><strong>Triple word frequency</strong>:</p>
+<p>Next, we did exploratory on word frequency</p>
+</div>
 </div>
 <div id="additional-analysis" class="section level2">
 <h2>Additional analysis</h2>

@@ -45,7 +45,7 @@ We are deeply sparked by what we have learned from the tidy text lecture from da
 
 2. Indeed website job posting data
 
-This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company.
+This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company. We mainly squared at the job description column that contain information such as short description of company and position, requirement and route of application.
 
 3. The 500 Largest Industrial Corporations in the U.S., Published by Fortune  magazine (updated by October 5, 2018)
 
@@ -135,7 +135,43 @@ Observe:
 
 *  The majority of jobs requires a bachelor degree at least. 
 
+Given we have about 7000 full job descriptions posted on Indeed by employers. We want to explore and visualize some key words that appear at high frequency across these description. As we expected, these key words might include information such as degree requirements, related background, working ethics and culture in the company. So we will count the word frequencies in terms of single word, double word, triple word and above. We are amazed to detect some words that are consistent with our expectation and those are not. So let's start our journey through this!
 
+__Single word frequency__:
+
+
+If we used the raw `stopword` data to clean the text, we will remove some software languages such as "R", "C" or "C++". Therefore we remove these stop words from the "removing" list. 
+
+
+Observe:
+
+Not surprisingly, words such as "data", "experience", "team", "research" and "development" rank the top frequency among all job descriptions. The single word mining does not provide much informative message because its lack of context. Things will get more intriguring as we increase the word frequency because words will start make sense when they become phrase.
+
+
+__Double word frequency__:
+
+
+Raw:
+
+Now a few technology words going vibe on Internet outrun other phrases. Here we saw machine learning, data science, equal opportunity, computer science, communication skills, even San Francisco towards the end! These top 50 phrases generally can be categorized into software tools, interpersonal skills and sociogeographic status information, for example, gender identity and veterans status. Besides, some phrases captured are in redundant or not meaningful such as "religion sex" and "action employer". Considering that our window size set to be 2 and the word tokens are separated into any two consecutive words in the text, not every output on the top rank will make perfect sense. Therefore we need to filter out some of those words and see what's left out there on the rank. 
+
+Since we know in advance that candidates' knowledge backgrounds, set of skills and degree are critical factors in job application, for now we removed sociogeographic information from the description and expect to see the information we expect to see. So we display the top 50 words again after removing information such as race, sex, "requirement", "qualification", veteran status, marital status, etc. 
+
+After removing:
+
+
+Observe:
+
+We observed "5 year experience", "hands experience", "master degree", "verbal written", "statistical analysis". Hands on experience is a critical Five years of experience mentioned quite a lot in these descriptions. 
+
+
+
+__Triple word frequency__:
+
+
+
+
+Next, we did exploratory on word frequency 
 
 
 

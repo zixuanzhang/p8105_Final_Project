@@ -5,31 +5,74 @@ read data (existing)
 --------------------
 
 ``` r
-datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
-  filter(!is.na(position))
+#datascience <- read_csv("./data/datascience_market/alldata.csv") %>% 
+  #filter(!is.na(position))
+
+datascience <- read_csv("./data/ds_500.csv")
+  # filter(!is.na(position))
+# head(datascience)
+# anyNA(datascience$position)
 ```
 
 minimum requirement of degree
 -----------------------------
 
 ``` r
-pattern_Hi = "[Hh]igh [Ss]chool"
-pattern_Ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
-pattern_Ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
-pattern_Phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b"
-
-datascience %>% 
-  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
-                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
-                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
-                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
-  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other"))) %>% 
-  ggplot(aes(x = degree)) + 
-  geom_bar() + 
-  labs(title = "Minimum degree requirement")
+pattern_hi = "[Hh]igh [Ss]chool"
+pattern_ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
+pattern_ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
+pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b"
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-2-1.png)
+stacked bar chart
+
+``` r
+# datascience %>% 
+#   mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+#                       ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+#                           ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+#                                ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+#   mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other")),
+#          flag = as.factor(flag)) %>% 
+#   # ggplot(aes(x = degree)) + geom_bar(aes(fill = flag))
+#   count(flag, degree) %>% 
+#   mutate(flag = ifelse(flag == 1, "top500", "non_top500")) %>% 
+#   spread(key = flag, value = n) %>% 
+#   plot_ly(x = ~degree, y = ~top500, type = "bar", name = "top500") %>% 
+#   add_trace(y = ~non_top500, name = "non top500") %>% 
+#   layout(yaxis = list(title = 'Count'), barmode = 'stack')
+
+datascience_OR <- datascience %>% 
+  mutate(high_school = ifelse(str_detect(.$description, pattern_hi) == TRUE, 1, 0),
+         bachelor = ifelse(str_detect(.$description, pattern_ba) == TRUE, 1, 0),
+         master = ifelse(str_detect(.$description, pattern_ma) == TRUE, 1, 0), 
+         phd = ifelse(str_detect(.$description, pattern_phd) == TRUE, 1, 0), 
+         other = high_school + bachelor + master + phd) %>% # if other == 0, means non degree has been found
+  mutate(flag = ifelse(flag == 1, "top500", "non_top500"), 
+         flag = as.factor(flag), 
+         other = ifelse(other == 0, 1, 0)) %>% # if other == 0, means non degree has been found
+  gather(key = degree, value = indicator, high_school:other) %>% 
+  count(flag, degree, indicator != 0) %>% 
+  filter(`indicator != 0` == "TRUE") %>% 
+  select(-`indicator != 0`) %>% 
+  spread(key = flag, value = n)
+
+datascience_OR %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(degree = fct_reorder(degree, log_OR)) %>%
+  ggplot(aes(degree, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
+
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 tree map for related background
 -------------------------------
@@ -71,7 +114,7 @@ bg_freq %>%
           palette = "Blues")
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 word frequency count
 --------------------
@@ -123,7 +166,7 @@ inspection_words_single %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 -   Double word
 
@@ -151,7 +194,7 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 word cloud
 
@@ -169,7 +212,7 @@ wordcloud(words = word_cloud2$word, freq = word_cloud2$n, random.order=FALSE,
           rot.per=0.35, colors=brewer.pal(8, "Dark2"))
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 -   Three words
 
@@ -189,7 +232,7 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 -   four words
 
@@ -209,7 +252,7 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 remove "equality"
 -----------------
@@ -272,7 +315,7 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ``` r
 inspection_words %>%
@@ -290,6 +333,6 @@ inspection_words %>%
   coord_flip()
 ```
 
-![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](tidy_data_EZ_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ### Comparing words across groups
