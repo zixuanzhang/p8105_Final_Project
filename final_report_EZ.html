@@ -128,6 +128,19 @@ $(document).ready(function () {
 </div>
 
 
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE,
+                      eval = FALSE,
+                      warning = F, 
+                      message = F)
+library(tidyverse) 
+library(readr)
+library(rvest)
+library(stringr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(treemap)
+library(plotly)</code></pre>
 <div id="motivation" class="section level2">
 <h2>Motivation</h2>
 <p>According to <a href="https://economicgraph.linkedin.com/resources/linkedin-workforce-report-august-2018">the 2018 August Linkedin Workforce Report</a>, there is a rising demand of work forces with data science skills across industries in United States. As more institutions and industry sectors rely on big data to make operations and decisions, the national shortage of data scientists has been reported to be 151,717. Some regions are in acute shortage of workforce in data science such as New York city, San Francisco and Los Angeles, etc.</p>
@@ -143,18 +156,65 @@ $(document).ready(function () {
 <div id="data" class="section level2">
 <h2>Data</h2>
 <ol style="list-style-type: decimal">
-<li>Indeed website job posting data</li>
+<li><p>National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics</p></li>
+<li><p>Indeed website job posting data</p></li>
 </ol>
 <p>This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company.</p>
-<ol start="2" style="list-style-type: decimal">
-<li><p>National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics</p></li>
-<li><p>The 500 Largest Industrial Corporations in the U.S., Published by Fortune magazine (updated by October 5, 2018)</p></li>
+<ol start="3" style="list-style-type: decimal">
+<li>The 500 Largest Industrial Corporations in the U.S., Published by Fortune magazine (updated by October 5, 2018)</li>
 </ol>
+<p>Given that we will address the questions related to both the job description from indeed dataset and 500 largest industrial corporations, we will integrate the company name from the later into the first dataset such as to create a new logical variable named <strong>flag</strong> to denote if is on the list of top 500 in US or not.</p>
+<pre class="r"><code>datascience &lt;- read_csv(&quot;./data/datascience_market/alldata.csv&quot;)
+
+fortune_500 &lt;- read_csv(&quot;./data/Fortune_500_Corporate_Headquarters.csv&quot;)
+
+
+df_datascience = datascience %&gt;% 
+  mutate(company = str_to_lower(company)) %&gt;% 
+  filter(!is.na(description))
+
+df_fortune_500 = fortune_500 %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(name = str_to_lower(name))
+
+
+index.1 &lt;- sapply(df_fortune_500$name, grep, df_datascience$company)
+
+flag = rep(0, length(df_datascience$position))
+flag[unlist(index.1)] = 1
+df_datascience = cbind(df_datascience, flag)
+
+# Top 500 largest industrial corporations 
+ds_500 = cbind(df_datascience[unlist(index.2),,drop = FALSE], df_fortune_500[unlist(index.1),,drop = FALSE]) %&gt;% 
+  select(position, company, description) %&gt;% 
+  filter(!is.na(description))
+
+ds_500 %&gt;% write.csv(&quot;./data/ds_500.csv&quot;)
+
+# NotTop 500
+ds_not_500 &lt;- df_datascience %&gt;%
+    filter(!company %in% ds_500$company) %&gt;% 
+    filter(!is.na(description))
+
+ds_not_500 %&gt;% write.csv(&quot;./data/ds_not_500.csv&quot;)</code></pre>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory analysis</h2>
-<p>Given that we will address the questions related to both the job description from indeed dataset and 500 largest industrial corporations, we will integrate the company name from the later into the first dataset such as to create a new logical variable named <strong>flag</strong> to denote if is on the list of top 500 in US or not.</p>
-<p>Indeed data combined with 500 Largest Industrial Corporation</p>
+<p>The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs.</p>
+<pre class="r"><code>pattern_Hi = &quot;[Hh]igh [Ss]chool&quot;
+pattern_Ba = &quot;[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree&quot;
+pattern_Ma = &quot;[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate&quot;
+pattern_Phd = &quot;\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b&quot;
+
+datascience %&gt;% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, &quot;high school&quot;,
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, &quot;bachelor&quot;,
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, &quot;master&quot;,
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, &quot;phd&quot;, &quot;other&quot;))))) %&gt;% 
+  mutate(degree = factor(degree, levels = c(&quot;high school&quot;, &quot;bachelor&quot;, &quot;master&quot;, &quot;phd&quot;, &quot;other&quot;))) %&gt;% 
+  ggplot(aes(x = degree)) + 
+  geom_bar() + 
+  labs(title = &quot;Minimum degree requirement&quot;)</code></pre>
 </div>
 <div id="additional-analysis" class="section level2">
 <h2>Additional analysis</h2>

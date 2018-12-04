@@ -5,6 +5,22 @@ date: "12/3/2018"
 output: html_document
 ---
 
+```{r setup, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = FALSE,
+                      warning = F, 
+                      message = F)
+library(tidyverse) 
+library(readr)
+library(rvest)
+library(stringr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(treemap)
+library(plotly)
+```
+
 ## Motivation
 
 According to [the 2018 August Linkedin Workforce Report](https://economicgraph.linkedin.com/resources/linkedin-workforce-report-august-2018), there is  a rising demand of work forces with data science skills across industries in United States. As more institutions and industry sectors rely on big data to make operations and decisions, the national shortage of data scientists has been reported to be 151,717. Some regions are in acute shortage of workforce in data science such as New York city, San Francisco and Los Angeles, etc. 
@@ -22,24 +38,75 @@ We are inspired by the great analysis work done and the blog edited by Shanshan 
 
 ## Data
 
-1. Indeed website job posting data
+
+1. National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics
+
+2. Indeed website job posting data
 
 This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company.
 
-2. National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics
-
-
 3. The 500 Largest Industrial Corporations in the U.S., Published by Fortune  magazine (updated by October 5, 2018)
+
+Given that we will address the questions related to both the job description from indeed dataset and 500 largest industrial corporations, we will integrate the company name from the later into the first dataset such as to create a new logical variable named __flag__ to denote if is on the list of top 500 in US or not.  
+
+```{r}
+datascience <- read_csv("./data/datascience_market/alldata.csv")
+
+fortune_500 <- read_csv("./data/Fortune_500_Corporate_Headquarters.csv")
+
+
+df_datascience = datascience %>% 
+  mutate(company = str_to_lower(company)) %>% 
+  filter(!is.na(description))
+
+df_fortune_500 = fortune_500 %>% 
+  janitor::clean_names() %>% 
+  mutate(name = str_to_lower(name))
+
+
+index.1 <- sapply(df_fortune_500$name, grep, df_datascience$company)
+
+flag = rep(0, length(df_datascience$position))
+flag[unlist(index.1)] = 1
+df_datascience = cbind(df_datascience, flag)
+
+# Top 500 largest industrial corporations 
+ds_500 = cbind(df_datascience[unlist(index.2),,drop = FALSE], df_fortune_500[unlist(index.1),,drop = FALSE]) %>% 
+  select(position, company, description) %>% 
+  filter(!is.na(description))
+
+ds_500 %>% write.csv("./data/ds_500.csv")
+
+# NotTop 500
+ds_not_500 <- df_datascience %>%
+    filter(!company %in% ds_500$company) %>% 
+    filter(!is.na(description))
+
+ds_not_500 %>% write.csv("./data/ds_not_500.csv")
+```
+
 
 
 ## Exploratory analysis
 
-Given that we will address the questions related to both the job description from indeed dataset and 500 largest industrial corporations, we will integrate the company name from the later into the first dataset such as to create a new logical variable named __flag__ to denote if is on the list of top 500 in US or not. 
+The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs.
 
-Indeed data combined with 500 Largest Industrial Corporation
+```{r}
+pattern_Hi = "[Hh]igh [Ss]chool"
+pattern_Ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
+pattern_Ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
+pattern_Phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b"
 
-
-
+datascience %>% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other"))) %>% 
+  ggplot(aes(x = degree)) + 
+  geom_bar() + 
+  labs(title = "Minimum degree requirement")
+```
 
 
 ## Additional analysis
