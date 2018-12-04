@@ -15,52 +15,84 @@ library(readxl)
 
 ```
 
-## Macroeconomic Context
-```{r}
 
-national_17 <- read_excel("data/national_10yr/national_2008.xls")
+```{r 10 yr trend across occupations}
 
-national_17 %>% 
+library(readxl)
 
-national_17 = national_17 %>% 
-              janitor::clean_names() %>% 
-              filter(str_detect(occ_code, "^[1][5]") | 
-                    occ_title == "All Occupations" | 
-                    str_detect(occ_code, "^[1][3]") | 
-                    str_detect(occ_code, "^[1][9]")) %>% 
-              arrange(desc(tot_emp), a_mean)
-
-## Annual Average comparison for different majors 
-national_17 %>% 
-              janitor::clean_names() %>% 
-              filter(occ_group == "major" | occ_group == "total") %>% 
-              mutate(occ_title = as.factor(occ_title)) %>% 
-              arrange(desc(tot_emp), a_mean) %>% 
-              mutate(CI_salary_low = a_mean - mean_prse, 
-                     CI_salary_high = a_mean + mean_prse ) %>% 
-  ggplot(aes(occ_title, a_mean)) +
-    geom_point() + 
-  geom_errorbar(ymax = national_17$a_mean +  national_17$mean_rpse , 
-                ymin =  national_17$a_mean -  national_17$mean_rpse) +
-  theme_bw() +
-  theme(legend.position = "bottom",
-        legend.direction = "horizontal",
-        axis.text.x = element_text(angle = 90, size = 8),
-        legend.key.size = unit(0.05, "cm"))
+#read data from national level
+read_national_data = function(file_yr) {
+  df = 
+  read_excel(str_c("data/national_10yr/national_", file_yr, ".xlsx")) %>% 
+  janitor::clean_names() %>% 
+  filter(str_detect(occ_code, "0000$")) %>%
+  mutate(year = file_yr) %>% 
+  mutate(a_mean = as.numeric(a_mean), 
+         a_median = as.numeric(a_median),
+         tot_emp = as.numeric(tot_emp),
+         mean_prse = as.numeric(mean_prse)) %>% 
+  select(year, tot_emp, occ_code, occ_title, a_mean, mean_prse, a_median) 
   
-              
+  df
+}
 
-national_17 %>% 
-filter(occ_code == "13-0000" | 
-                    occ_title == "All Occupations" | 
-                    occ_code ==  "15-0000" | 
-                    occ_code == "19-0000") %>% 
-              arrange(desc(tot_emp), a_mean)
-  
+#create a tibble for all 10 years' data
+national_df = map_df(2008:2017, read_national_data) %>% unnest()
+
+#10 major occupation fields with most total emploment in 2017
+national_df %>% filter(year == 2017, occ_code != "00-0000") %>% arrange(desc(tot_emp)) %>% head(n=10)
+
+
+national_df %>%
+  filter(occ_code %in% c("00-0000", 
+                         "43-0000",
+                         "35-0000",
+                         "53-0000",
+                         "51-0000",
+                         "25-0000",
+                         "29-0000",
+                         
+                         "15-0000",)) %>% 
+  group_by(year) %>% 
+  arrange(desc(tot_emp)) %>%
+  ggplot(aes(x = year, y = a_mean, color = occ_code))+
+  geom_line()+
+  geom_point()+
+  labs(x = "Year",
+       y = "Mean Annual Salary in dollars",
+       title = "10-year trend of mean annual salary change across different occupations in the U.S") +
+  scale_colour_discrete(name ="Occupation\nTitle",
+                      breaks = c("00-0000", "13-0000", "15-0000", "17-0000", "19-0000", "29-0000", "41-0000"),
+                      labels = c("All Occupations", "Business and Financial Operations", "Computer and Mathematical", "Architecture and Engineering", "Life, Physical, and Social Science", "Healthcare Practitioners and Technical", "Sales and Related"))
 
 ```
 
-For detetcting the outlook of the computer and math category jobs, we carried out comparison with jobs in some popular fields, such as the 
+
+```{r plotting increment rate}
+national_df %>% 
+  group_by(occ_code) %>% 
+  arrange(year) %>% 
+  mutate(increment = ifelse(year == 2008 ,0, diff(tot_emp, 1,1))) %>% 
+  mutate(increment_p = increment / tot_emp) %>% 
+  filter(occ_code %in% c("13-0000",
+                         "15-0000",
+                         "17-0000",
+                         "19-0000",
+                         "29-0000",
+                         "41-0000",
+                         "00-0000")) %>%
+  ggplot(aes(x = year, y = increment_p, color = occ_code))+
+  geom_point(aes(size = a_median,  alpha=0.4))+
+  scale_size(range = c(0,11))+
+  geom_line()+
+  labs(size = "Median Annual Salary")+
+  scale_colour_discrete(name ="Occupation\nTitle",
+                      breaks = c("00-0000", "13-0000", "15-0000", "17-0000", "19-0000", "29-0000", "41-0000"),
+                      labels = c("All Occupations", "Business and Financial Operations", "Computer and Mathematical", "Architecture and Engineering", "Life, Physical, and Social Science", "Healthcare Practitioners and Technical", "Sales and Related")) +
+  scale_alpha(guide = 'none')
+
+```
+
 
 
 ## Geographical plots and maps 
