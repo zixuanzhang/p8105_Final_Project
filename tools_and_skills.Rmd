@@ -172,11 +172,11 @@ skill_new %>%
     flag = as.factor(flag),
     flag = ifelse(flag == 1, "top500", "non_top500")
          ) %>% 
-  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artifical Intelligence", "Writing Skills")) %>% 
-  select(flag, skills, n) %>%
   spread(key = flag, value = n) %>% 
-  mutate(sum = non_top500 + top500,
-         skills = fct_reorder(skills, sum)) %>% 
+  mutate(sum = non_top500 + top500) %>%
+  cbind(skills = c("Artifical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
+  select(skills, 2, 3, 4) %>% 
+  mutate(skills = fct_reorder(skills, sum)) %>% 
   plot_ly(.) %>% 
   add_trace(y = ~skills, x = ~top500, type = "bar", name = "Top 500", width = .6, marker = list(color = 'lightseagreen')) %>%
   add_trace(y = ~skills, x = ~non_top500, type = "bar", name = "Non-top 500", width = .6, marker = list(color = ' lightgreen')) %>%
