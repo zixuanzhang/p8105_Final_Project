@@ -20,7 +20,7 @@ library(readxl)
 
 library(readxl)
 
-#read data from national level
+#read national Occupational Employment Statistics data
 read_national_data = function(file_yr) {
   df = 
   read_excel(str_c("data/national_10yr/national_", file_yr, ".xlsx")) %>% 
@@ -36,13 +36,13 @@ read_national_data = function(file_yr) {
   df
 }
 
-#create a tibble for all 10 years' data
+#aggregate all 10 years' data in one data frame
 national_df = map_df(2008:2017, read_national_data) %>% unnest()
 
-#10 major occupation fields with most total emploment in 2017
+#what are the 10 major occupation fields with most total emploment in 2017?
 national_df %>% filter(year == 2017, occ_code != "00-0000") %>% arrange(desc(tot_emp)) %>% head(n=10)
 
-
+#Compare the 10-year mean annual salary trend in these major fields
 national_df %>%
   filter(occ_code %in% c("00-0000", 
                          "43-0000",
@@ -51,8 +51,7 @@ national_df %>%
                          "51-0000",
                          "25-0000",
                          "29-0000",
-                         
-                         "15-0000",)) %>% 
+                         "15-0000")) %>% 
   group_by(year) %>% 
   arrange(desc(tot_emp)) %>%
   ggplot(aes(x = year, y = a_mean, color = occ_code))+
@@ -69,6 +68,7 @@ national_df %>%
 
 
 ```{r plotting increment rate}
+#Compare the increment rate of total employment in our selected occupational fields
 national_df %>% 
   group_by(occ_code) %>% 
   arrange(year) %>% 
