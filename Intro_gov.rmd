@@ -5,21 +5,17 @@ date: "11/24/2018"
 output: github_document
 ---
 
-## Data: May 2017 National Occupational Employment and Wage Estimates United States>
+## Data: May 2017 National Occupational Employment and Salary Estimates United States>
 
-## Salary Prospect From 2017 
+## Annual Salary comparison by Broad Occupation Categories
 
-```{r}
+```{r, include = FALSE}
 library(tidyverse)
 library(readxl)
-
 ```
 
 
-```{r 10 yr trend across occupations}
-
-library(readxl)
-
+```{r read and tidy labor data}
 #read national Occupational Employment Statistics data
 read_national_data = function(file_yr) {
   df = 
@@ -53,6 +49,9 @@ national_df %>%
                                  "healthcare practitioner and technical occupations", 
                                  "healthcare practitioners and technical occupations")) 
 
+```
+
+```{r 10 yr trend across occupations}
 #plotting the 10-yr trend of median annual salary across all major fields.
 national_df %>%
   filter(occ_code != "15-0000") %>% 
@@ -68,10 +67,10 @@ national_df %>%
        color = "Occupation\nTitle",
        title = "10-year trend of median annual salary change across different occupations in the U.S",
        caption = "(based on data from Bureau of Labor Statistics)") +
+  scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017)) +
   theme(legend.position="bottom", 
         legend.text = element_text(size=8))+
   guides(colour = guide_legend(nrow = 8))
-
 ```
 
 
@@ -100,6 +99,7 @@ national_df %>%
        color = "Occuputation Title",
        x = "Year", 
        y = "Annual percentage increase(%) in total empolyment") + 
+  scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017)) +
   scale_alpha(guide = 'none')+
   scale_colour_manual(values=cbbPalette)
 
