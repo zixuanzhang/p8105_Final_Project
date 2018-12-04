@@ -1,0 +1,51 @@
+---
+title: "final_report_EZ"
+author: "Eleanor Zhang"
+date: "12/3/2018"
+output: html_document
+---
+
+## Motivation
+
+According to [the 2018 August Linkedin Workforce Report](https://economicgraph.linkedin.com/resources/linkedin-workforce-report-august-2018), there is  a rising demand of work forces with data science skills across industries in United States. As more institutions and industry sectors rely on big data to make operations and decisions, the national shortage of data scientists has been reported to be 151,717. Some regions are in acute shortage of workforce in data science such as New York city, San Francisco and Los Angeles, etc. 
+
+Given that graduate students entering into the job market with bachelor, master, or PhD degree are actively seeking jobs locally or nationwide, we want to utilize the 7000 job posting information scraped from Indeed by ShanShan Lu on
+[Kaggle](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv) in order to investigate the data science job market in U.S. Particularly, we are interested in geographic regions with rich job opportunities, set of skills employers are expecting, and different qualifications and requirements for data science related jobs. We are hoping these exploratory analysis will help students better taylor at their skill building and job hunting in the future.
+
+
+## Related work
+
+We are inspired by the great analysis work done and the blog edited by Shanshan Lu posted on Kaggle. We shared some common interest in this dataset in terms of a wide array of qualifiers for getting a job in the field of data science. Beyond that, we launched our exploration from a general trend finding through data from [National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics](https://www.bls.gov/oes/tables.htm). Then we took a close at the data from Indeed job posting. As we noticed this data includes companies and industries at differentiated levels. We brought the types of companies onto the table and mined through if top 500 in US and non-top-500 companies have different expectations of their candidates.
+
+## Inital questions
+
+
+## Data
+
+1. Indeed website job posting data
+
+This data is scraped by Shanshan Lu from Indeed website of 7,000 data scientist jobs around the U.S. on August 3rd. The information she collected include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company.
+
+2. National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics
+
+
+3. The 500 Largest Industrial Corporations in the U.S., Published by Fortune  magazine (updated by October 5, 2018)
+
+
+## Exploratory analysis
+
+Given that we will address the questions related to both the job description from indeed dataset and 500 largest industrial corporations, we will integrate the company name from the later into the first dataset such as to create a new logical variable named __flag__ to denote if is on the list of top 500 in US or not. 
+
+Indeed data combined with 500 Largest Industrial Corporation
+
+
+
+
+
+## Additional analysis
+
+
+## Discussion
+
+
+
