@@ -112,8 +112,30 @@ datascience %>%
   labs(title = "Minimum degree requirement")
 ```
 
+In addition, we also count for degree requirement of top 500 industries and non-top-500 industries and add this layer of information into a stacked bar chart.
 
-Observe:
+```{r}
+datascience %>% 
+  mutate(degree = ifelse(str_detect(.$description, pattern_Hi) == TRUE, "high school",
+                      ifelse(str_detect(.$description, pattern_Ba) == TRUE, "bachelor",
+                          ifelse(str_detect(.$description, pattern_Ma) == TRUE, "master",
+                               ifelse(str_detect(.$description, pattern_Phd) == TRUE, "phd", "other"))))) %>% 
+  mutate(degree = factor(degree, levels = c("high school", "bachelor", "master", "phd", "other")),
+         flag = as.factor(flag)) %>% 
+  # ggplot(aes(x = degree)) + geom_bar(aes(fill = flag))
+  count(flag, degree) %>% 
+  mutate(flag = ifelse(flag == 1, "top500", "non_top500")) %>% 
+  spread(key = flag, value = n) %>% 
+  plot_ly(x = ~degree, y = ~top500, type = "bar", name = "top500") %>% 
+  add_trace(y = ~non_top500, name = "non top500") %>% 
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+```
+
+Observe:  
+
+*  The majority of jobs requires a bachelor degree at least. 
+
+
 
 
 
