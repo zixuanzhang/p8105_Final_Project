@@ -33,6 +33,8 @@ Given that graduate students entering into the job market with bachelor, master,
 
 We are inspired by the great analysis work done and the blog edited by Shanshan Lu posted on Kaggle. We shared some common interest in this dataset in terms of a wide array of qualifiers for getting a job in the field of data science. Beyond that, we launched our exploration from a general trend finding through data from [National Occupational Employment Status and Wage Estimates from US Bureau of Labour Statistics](https://www.bls.gov/oes/tables.htm). Then we took a close at the data from Indeed job posting. As we noticed this data includes companies and industries at differentiated levels. We brought the types of companies onto the table and mined through if top 500 in US and non-top-500 companies have different expectations of their candidates.
 
+We are deeply sparked by what we have learned from the tidy text lecture from data science class. Given the nature of our dataset, more specifically the job description column in Indeed data set, is constitutes strings in R environment. This `tidy text` plays a critical role in assisting us to tidy and use word tokens as to count word or phrase frequencies.
+
 ## Inital questions
 
 
@@ -89,9 +91,11 @@ ds_not_500 %>% write.csv("./data/ds_not_500.csv")
 
 ## Exploratory analysis
 
-The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs.
+#### Minimum degree requirement
 
-```{r}
+The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs. Since the "degree" message is coded into different format in the job description column, we managed to be inclusive in this stage. We relied on `str_detect` function from `stringr` package and specify the terms we are looking for while excluding some unmeaningful expression in the script. Some job description contain multiple degree qualification such as "bachelor, master, or higher education". We will count the minimum requirement. 
+
+```{r degree}
 pattern_Hi = "[Hh]igh [Ss]chool"
 pattern_Ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
 pattern_Ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
@@ -107,6 +111,10 @@ datascience %>%
   geom_bar() + 
   labs(title = "Minimum degree requirement")
 ```
+
+
+Observe:
+
 
 
 ## Additional analysis
