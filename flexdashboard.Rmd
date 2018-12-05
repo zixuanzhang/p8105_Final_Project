@@ -166,7 +166,7 @@ national_df %>%
 Column {data-width=600}
 -----------------------------------------------------------------------
 
-### Chart A
+### Chart A {data-height=600}
 
 ```{r}
 plot_geo(state_salary, locationmode = 'USA-states') %>%
@@ -183,7 +183,7 @@ plot_geo(state_salary, locationmode = 'USA-states') %>%
   )
 ```
 
-### Chart B
+### Chart B {data-height=400}
 
 ```{r}
 d3tree(p, rootname = "General")
