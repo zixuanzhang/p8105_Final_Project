@@ -182,10 +182,10 @@ plot_geo(state_salary, locationmode = 'USA-states') %>%
   )
 ```
 
-### {data-height=400}
+### {data-height=400, .tabset}
 
 ```{r}
-d3tree(p, rootname = "Related Background Treemap")
+d3tree(p, rootname = "Related Background")
 ```
 
 Column {data-width=450, .tabset}
@@ -231,4 +231,3 @@ national_df %>%
 ```{r}
 
 ```
-
