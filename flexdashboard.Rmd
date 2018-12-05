@@ -2,7 +2,7 @@
 title: "flexdashboard"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
+    orientation: columns
     vertical_layout: fill
     css: style.css
 ---
@@ -24,7 +24,9 @@ library(plotly)
 library(treemap)
 library(d3treeR)
 # devtools::install_github("timelyportfolio/d3treeR")
+```
 
+```{r map, message=FALSE, warning=FALSE, include=F}
 state_17 <- read_xlsx("./data/state/oesm17st/state_M2017_dl.xlsx") %>% 
   janitor::clean_names() %>% 
   mutate(a_mean = as.numeric(a_mean)) %>%
@@ -69,7 +71,7 @@ g <- list(
 ```
 
 
-```{r message=FALSE, warning=FALSE, include=F}
+```{r treemap, message=FALSE, warning=FALSE, include=F}
 datascience <- read_csv("./data/ds_500.csv") %>% 
   filter(!is.na(position))
 
@@ -123,7 +125,43 @@ treemap(
     )
 ```
 
-Column {.sidebar data-width=650}
+```{r salary and vacancy, message=FALSE, warning=FALSE, include=F}
+#read national Occupational Employment Statistics data
+read_national_data = function(file_yr) {
+  df = 
+  read_excel(str_c("data/national_10yr/national_", file_yr, ".xls")) %>% 
+  janitor::clean_names() %>% 
+  filter(str_detect(occ_code, "0000$")) %>%
+  mutate(year = file_yr) %>% 
+  mutate(a_mean = as.numeric(a_mean), 
+         a_median = as.numeric(a_median),
+         tot_emp = as.numeric(tot_emp),
+         mean_prse = as.numeric(mean_prse)) %>% 
+  select(year, tot_emp, occ_code, occ_title, a_mean, mean_prse, a_median) 
+  
+  df
+}
+
+#aggregate all 10 years' data in one data frame
+national_df = map_df(2008:2017, read_national_data) %>% unnest()
+
+#tidy occupation titles
+national_df = 
+national_df %>% 
+  mutate(occ_title = tolower(occ_title)) %>% 
+  mutate(occ_title = str_replace(occ_title, 
+                                 "computer and mathematical science occupations", 
+                                 "computer and mathematical occupations"),
+         occ_title = str_replace(occ_title, 
+                                 "community and social service occupations", 
+                                 "community and social services occupations"),
+         occ_title = str_replace(occ_title, 
+                                 "healthcare practitioner and technical occupations", 
+                                 "healthcare practitioners and technical occupations")) 
+```
+
+
+Column {data-width=600}
 -----------------------------------------------------------------------
 
 ### Chart A
@@ -138,19 +176,19 @@ plot_geo(state_salary, locationmode = 'USA-states') %>%
   layout(
     title = '2017 US Data Science jobs info by State<br>Source: <a href="https://www.bls.gov/oes/tables.htm">BLS</a>',
     titlefont = 8,
-    geo = g
+    geo = g, 
+    legend = list(x = 0.1, y = 0.1, orientation = 'h')
   )
 ```
 
-Row {data-height = 500}
------------------------------------------------------------------------
 ### Chart B
 
 ```{r}
 d3tree(p, rootname = "General")
 ```
 
-Row {.tabset}
+
+Column {data-width=400, .tabset}
 -----------------------------------------------------------------------
 
 ### Chart C
@@ -162,6 +200,23 @@ Row {.tabset}
 ### Chart D
 
 ```{r}
-
+national_df %>%
+  filter(occ_code != "15-0000") %>% 
+  group_by(year) %>% 
+  arrange(desc(tot_emp)) %>%
+  ggplot(aes(x = year, y = a_median, color = occ_title))+
+  geom_line()+
+  geom_point()+
+  geom_line(data = filter(national_df, occ_code == "15-0000"), color = "black")+
+  geom_point(data = filter(national_df, occ_code == "15-0000"), color = "black")+
+  labs(x = "Year",
+       y = "Mean Annual Salary in dollars",
+       color = "Occupation\nTitle",
+       title = "10-year trend of median annual salary change across different occupations in the U.S",
+       caption = "(based on data from Bureau of Labor Statistics)") +
+  scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017)) +
+  theme(legend.position="bottom", 
+        legend.text = element_text(size=8))+
+  guides(colour = guide_legend(nrow = 8))
 ```
 
