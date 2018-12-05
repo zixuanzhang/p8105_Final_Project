@@ -7,7 +7,7 @@ output: github_document
 
 ## Data: May 2017 National Occupational Employment and Salary Estimates United States>
 
-## Annual Salary comparison by Broad Occupation Categories
+## Reviewing U.S. job market of data scientists in recent 10 years
 
 ```{r, include = FALSE}
 library(tidyverse)
@@ -51,7 +51,9 @@ national_df %>%
 
 ```
 
-```{r 10 yr trend across occupations}
+The “Occupational Employment Statistics” data bases its classification of occupations on Standard Occupational Classification (SOC). According to this standard, we will refer one of the major categories “Computer and Mathematical Occupations" with SOC code “15-0000” to our occupation of interest “data scientists and data-science-related  professions”, for analysis based on this data in the following.   
+
+```{r 10 yr trend across occupations, dpi = 300}
 #plotting the 10-yr trend of median annual salary across all major fields.
 national_df %>%
   filter(occ_code != "15-0000") %>% 
@@ -73,8 +75,9 @@ national_df %>%
   guides(colour = guide_legend(nrow = 8))
 ```
 
+Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from $71270 to $84560, with a greater percentage of increase than the national average.   
 
-```{r plotting increment rate}
+```{r plotting increment rate, dpi = 300}
 #create color panel for plotting
 cbbPalette = c( "#CC6666", "#56B4E9", "#009E73","#000000", "#F0E442", "#0072B2", "#E69F00")
 
@@ -83,14 +86,15 @@ national_df %>%
   group_by(occ_code) %>% 
   arrange(year) %>% 
   mutate(increment = ifelse(year == 2008 ,0, diff(tot_emp, 1,1))) %>% 
-  mutate(increment_p = increment / tot_emp) %>% 
+  mutate(increment_p = increment / tot_emp) %>%
   filter(occ_code %in% c("13-0000",
                          "15-0000",
                          "17-0000",
                          "19-0000",
                          "29-0000",
                          "41-0000",
-                         "00-0000")) %>%
+                         "00-0000"),
+         year != "2008") %>%
   ggplot(aes(x = year, y = increment_p*100, color = occ_title))+
   geom_point(aes(size = a_median,  alpha=0.4))+
   scale_size(range = c(0,5))+
@@ -101,11 +105,11 @@ national_df %>%
        y = "Annual percentage increase(%) in total empolyment") + 
   scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017)) +
   scale_alpha(guide = 'none')+
-  scale_colour_manual(values=cbbPalette)
+  scale_colour_manual(values = cbbPalette)
 
 ```
 
-
+Though the median annual salary of data-science related professions follow a trend of steady increase in recent years, the number of total employment in this field since 2014 did not increase as fast as 2010 and 2011. Plotted in black in graph 2, the employment in computer and mathematical field has been increasing at a greater rate than many other professions that generally require qualifications from higher education. Even so, the rate dropped significantly after 2015 and reached below 0 in 2017.  
 
 ## Geographical plots and maps 
 
