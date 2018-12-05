@@ -135,9 +135,6 @@ tool_new %>%
 
 
 
-
-
-
 ### Skills
 
 Extract skill variable and plot (Are the classifications right?)
@@ -220,4 +217,31 @@ skill_new %>%
     ) 
 ```
 
+Skills - log odds ratio
+
+```{r}
+skill_new %>% 
+  gather(key = skill, value = value, machine_learning:writing) %>%
+  filter(value == 1) %>% 
+  count(flag, skill) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  cbind(skills = c("Artifical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
+  select(skills, 2, 3) %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+    ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(skills = fct_reorder(skills, log_OR)) %>%
+  ggplot(aes(skills, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
 
