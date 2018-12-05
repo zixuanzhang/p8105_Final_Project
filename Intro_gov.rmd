@@ -75,7 +75,7 @@ national_df %>%
   guides(colour = guide_legend(nrow = 8))
 ```
 
-Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from 71270 dollars to 84560 dollars, with a greater percentage of increase than the national average.   
+Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from \$71270 to \$84560, with a greater percentage of increase than the national average.   
 
 ```{r plotting increment rate, dpi = 300}
 #create color panel for plotting
