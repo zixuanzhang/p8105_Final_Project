@@ -107,17 +107,18 @@ for (i in c(1:length(pattern_bg))) {
 
 bg_freq = 
   bg_freq %>% 
-  gather(key = subgroup, value = freq, top500:nontop500)
+  gather(key = subgroup, value = freq, top500:nontop500) %>% 
+  mutate(freq_ratio = ifelse(subgroup == "top500", freq/sum(datascience$flag == 1), freq/sum(datascience$flag == 0))) %>% 
+  mutate(subgroup = paste("In ", subgroup, ": n(companies) = ", freq, ", ratio = ", round(freq_ratio, digits = 3), sep = ""))
 
 p = 
 treemap(
     bg_freq,
     index = c("index", "subgroup"), 
-    vSize = "freq", 
-    vColor = "freq", 
+    vSize = "freq_ratio", 
+    vColor = "freq_ratio", 
     type = "value",
-    palette = "Blues", 
-    fontsize.labels = 20
+    palette = "Blues"
     )
 ```
 
@@ -145,7 +146,7 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
-d3tree2(p, rootname = "General")
+d3tree(p, rootname = "General")
 ```
 
 ### Chart C
