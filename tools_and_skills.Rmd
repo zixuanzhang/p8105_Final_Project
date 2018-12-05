@@ -168,7 +168,7 @@ skill_bubble = skill_new %>%
   # sum of each column
   colSums(., na.rm = TRUE) %>% 
   as.tibble() %>% 
-  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artifical Intelligence", "Writing Skills"), .$value) %>% 
+  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artificial Intelligence", "Writing Skills"), .$value) %>% 
   select(skills, sum = value) %>% 
   `row.names<-.default`(1:10) %>% 
   mutate(skills = fct_reorder(skills, sum))
