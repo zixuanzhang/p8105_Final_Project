@@ -83,15 +83,15 @@ pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning |
                  "[Bb]iostatis", 
                  "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
                  "[Cc]hemical [Ee]ngineering")
-name_bg = c("CS", 
-          "Statistics", 
-          "Mathematics", 
-          "Quantitative", 
-          "Economics", 
-          "Biology", 
-          "Biostatistics", 
-          "DS", 
-          "Engineer")
+name_bg = c("computer science", 
+          "statistics", 
+          "mathematics", 
+          "quantitative", 
+          "economics", 
+          "biology", 
+          "biostatistics", 
+          "data science", 
+          "engineer")
 
 bg_freq = data.frame(
   background = pattern_bg, 
