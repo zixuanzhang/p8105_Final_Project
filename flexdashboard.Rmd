@@ -166,7 +166,7 @@ national_df %>%
 Column {data-width=550}
 -----------------------------------------------------------------------
 
-### Chart A {data-height=600}
+### {data-height=600}
 
 ```{r}
 plot_geo(state_salary, locationmode = 'USA-states') %>%
@@ -183,23 +183,22 @@ plot_geo(state_salary, locationmode = 'USA-states') %>%
   )
 ```
 
-### Chart B {data-height=400}
+### {data-height=400}
 
 ```{r}
-d3tree(p, rootname = "General")
+d3tree(p, rootname = "Related Background Treemap")
 ```
-
 
 Column {data-width=450, .tabset}
 -----------------------------------------------------------------------
 
-### Chart C
+### Job Vacancy
 
 ```{r}
 
 ```
 
-### Chart D
+### Annual Salary Change
 
 ```{r}
 national_df %>%
@@ -220,5 +219,17 @@ national_df %>%
   theme(legend.position="bottom", 
         legend.text = element_text(size=8))+
   guides(colour = guide_legend(nrow = 8))
+```
+
+### Required Tools
+
+```{r}
+
+```
+
+### Required Skills
+
+```{r}
+
 ```
 
