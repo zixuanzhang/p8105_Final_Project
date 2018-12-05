@@ -37,7 +37,7 @@ datascience <- read_csv("./data/ds_500.csv")
 pattern_hi = "[Hh]igh [Ss]chool"
 pattern_ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
 pattern_ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
-pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b"
+pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b | \\b[Dd]octoral\\b"
 ```
 
 stacked bar chart
@@ -93,23 +93,27 @@ datascience_OR %>%
 
 ```{r, dpi = 300}
 pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
-                 "[Ss]tatistic", 
-                 "[Mm]ath", 
-                 "[Qq]uantitative", 
-                 "[Ee]conomic", 
-                 "[Bb]iolog", 
-                 "[Bb]iostatis", 
-                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
-                 "[Cc]hemical [Ee]ngineering")
-name_bg = c("CS", 
+               "[Ss]tatistic", 
+               "[Mm]ath", 
+               "[Qq]uantitative", 
+               "[Ee]conomic", 
+               "[Bb]iolog", 
+               "[Bb]iostatis", 
+               "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+               "[Cc]hemical [Ee]ngineering", 
+               "[Pp]hysics", 
+               "\\bMB\\.?A\\b")
+name_bg = c("Computer Science", 
           "Statistics", 
           "Mathematics", 
           "Quantitative", 
           "Economics", 
           "Biology", 
           "Biostatistics", 
-          "DS", 
-          "Engineer")
+          "Data Science", 
+          "Chemical Engineer", 
+          "Physics", 
+          "MBA")
 
 bg_freq = data.frame(
   background = pattern_bg, 
