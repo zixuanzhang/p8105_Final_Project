@@ -91,7 +91,7 @@ ds_not_500 %>% write.csv("./data/ds_not_500.csv")
 
 ## Exploratory analysis
 
-#### Minimum degree requirement
+#### degree requirement
 
 The first question we want to address here is the minimum degree requirement from each job posting out of nearly 7000 jobs. Since the "degree" message is coded into different format in the job description column, we managed to be inclusive in this stage. We relied on `str_detect` function from `stringr` package and specify the terms we are looking for while excluding some unmeaningful expression in the script. Some job description contain multiple degree qualification such as "bachelor, master, or higher education". We will count the minimum requirement. 
 
