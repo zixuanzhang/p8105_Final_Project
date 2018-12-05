@@ -163,7 +163,7 @@ national_df %>%
 ```
 
 
-Column {data-width=600}
+Column {data-width=550}
 -----------------------------------------------------------------------
 
 ### Chart A {data-height=600}
@@ -190,7 +190,7 @@ d3tree(p, rootname = "General")
 ```
 
 
-Column {data-width=400, .tabset}
+Column {data-width=450, .tabset}
 -----------------------------------------------------------------------
 
 ### Chart C
