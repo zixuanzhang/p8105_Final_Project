@@ -105,6 +105,39 @@ tool_new %>%
     ) 
 ```
 
+Tool - log odds ratio
+
+```{r}
+tool_new %>% 
+  gather(key = tool, value = value, python:linux) %>%
+  filter(value == 1) %>% 
+  count(flag, tool) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500"),
+    tool = str_to_title(tool),
+    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+    ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(tool = fct_reorder(tool, log_OR)) %>%
+  ggplot(aes(tool, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
+
+
+
+
+
+
 ### Skills
 
 Extract skill variable and plot (Are the classifications right?)
