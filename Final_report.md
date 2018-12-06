@@ -3,12 +3,27 @@ Final Report on Data Science Job Outlook
 Zhang, Eleanor(zz2602) Jiang, Shan(sj2921) Shen, Jiayi(js5354) Yu, Jie(jy2944) Wu, Guojing (gw2383)
 12/6/2018
 
+-   [Introduction](#introduction)
+-   [Data and Method](#data-and-method)
+    -   [Source](#source)
+    -   [Access Data](#access-data)
+    -   [Data Cleaning](#data-cleaning)
+-   [Results](#results)
+    -   [Reviewing U.S. job market of data scientists in recent 10 years](#reviewing-u.s.-job-market-of-data-scientists-in-recent-10-years)
+    -   [Degree Preference](#degree-preference)
+    -   [Desired Academic Background](#desired-academic-background)
+    -   [Most Required tools](#most-required-tools)
+    -   [Most Required Skills](#most-required-skills)
+    -   [Job Description Text Analysis](#job-description-text-analysis)
+-   [Discussion](#discussion)
+-   [Reference](#reference)
+
 Introduction
 ------------
 
 According to the 2018 August Linkedin Workforce Report \[1\], there is a roaring demand for workforces with data science skills across industries in the United States. As more institutions and industry sectors rely on big data to deal with operational challenges and optimize their decisions, the shortage of well-trained personnel in data science has been reported to be 151,717. Some regions are even in acute shortage, such as New York City, San Francisco, and Los Angeles.
 
-Given that graduate students entering into the job market with bachelor, master, or Ph.D. degree are actively seeking jobs locally or nationwide, we want to utilize the 7000 jobs posting information scraped from Indeed by Shanshan Lu on [Kaggle](https://www.kaggle.com/) in order to investigate the data science job market in the U.S. Particularly, we are interested in geographic concentration of job opportunities, set of skills employers are expecting, and different qualifications and requirements for data science-related jobs. We are hoping this exploratory analysis will help students better tailor at their skill building and job hunting in the future.
+Given that graduate students entering into the job market with bachelor, master, or Ph.D. degree are actively seeking jobs locally or nationwide, we want to utilize the 7000 jobs posting information scraped from Indeed by Shanshan Lu on [Kaggle](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv) in order to investigate the data science job market in the U.S. Particularly, we are interested in geographic concentration of job opportunities, set of skills employers are expecting, and different qualifications and requirements for data science-related jobs. We are hoping this exploratory analysis will help students better tailor at their skill building and job hunting in the future.
 
 We are inspired by the great analysis work done and the blog edited by Shanshan Lu posted on Kaggle. We shared some common interest in this dataset in terms of a wide array of qualifiers for getting a job in the field of data science. Beyond that, we launched our exploration from a general trend finding through data from National Occupational Employment Status and Wage Estimates from the US Bureau of Labour Statistics. Then we took a close look at the data from Indeed job posting. As we noticed this data includes companies and industries at differentiated levels. We brought the types of companies onto the table and mined through if the Fortune 500 U.S. companies and Non-Fortune 500 U.S. companies have different expectations of their candidates.
 
@@ -66,7 +81,7 @@ The “Occupational Employment Statistics” data bases its classification of oc
 
 <img src="report_pics/intro_1_10yr_salary.png" alt="Figure 1 - Comparison of 10 year trend of median annual salary (in dollars)" style="width:80.0%" />
 
-Graph 1 compares the 23 major occupation groups (including the “all occupations” which represents the national average level) where the medians of annual salary of computer and mathematical occupations are plotted in black. Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from $71270 to $84560, with a greater percentage of increase than the national average salary.
+Fig. 1 compares the 23 major occupation groups (including the “all occupations” which represents the national average level) where the medians of annual salary of computer and mathematical occupations are plotted in black. Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from $71270 to $84560, with a greater percentage of increase than the national average salary.
 
 ![Figure 2 - Increment rate of total employment in different occupation categories from 2007 to 2017](report_pics/intro_2_emp_increment.png) In Fig. 2, we reduced the occupations of interest down to 6 categories that generally require degree qualifications from higher education institutes and compared the increment rate of total employment number in recent 10 years.
 
