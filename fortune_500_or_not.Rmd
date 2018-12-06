@@ -1,33 +1,84 @@
 ---
-title: "tools and skills variable"
-output: html_document
+title: "Fortune 500 v.s. Non-fortune 500" 
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  message = FALSE,
-  warning = FALSE
-)
-
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = F, 
+                      message = F)
 library(tidyverse)
+library(readr)
+library(rvest)
 library(stringr)
-
-library(packcircles) # bubble plot
-
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(treemap)
 library(plotly)
+library(packcircles) # bubble plot
 
 theme_set(theme_bw())
 ```
 
-```{r}
+
+```{r read_data}
+# Read data
 datascience <- read_csv("./data/ds_500.csv")
 ```
 
-### Tools
+### Minimum Requirement of Degree
 
-Extract tool variable and plot
+```{r, dpi = 300}
+## minimum requirement of degree
+pattern_hi = "[Hh]igh [Ss]chool"
+pattern_ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
+pattern_ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
+pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b | \\b[Dd]octoral\\b"
+```
+
+```{r fig.width = 10, fig.height = 6}
+datascience_OR <- datascience %>% 
+  mutate(high_school = ifelse(str_detect(.$description, pattern_hi) == TRUE, 1, 0),
+         bachelor = ifelse(str_detect(.$description, pattern_ba) == TRUE, 1, 0),
+         master = ifelse(str_detect(.$description, pattern_ma) == TRUE, 1, 0), 
+         phd = ifelse(str_detect(.$description, pattern_phd) == TRUE, 1, 0), 
+         other = high_school + bachelor + master + phd) %>% # if other == 0, means non degree has been found
+  mutate(flag = ifelse(flag == 1, "top500", "non_top500"), 
+         flag = as.factor(flag), 
+         other = ifelse(other == 0, 1, 0)) %>% # if other == 0, means non degree has been found
+  gather(key = degree, value = indicator, high_school:other) %>% 
+  count(flag, degree, indicator != 0) %>% 
+  filter(`indicator != 0` == "TRUE") %>% 
+  select(-`indicator != 0`) %>% 
+  spread(key = flag, value = n)
+
+datascience_OR %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(degree = fct_reorder(degree, log_OR)) %>%
+  ggplot(aes(degree, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
+
+
+High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. Non-fortune 500 corporations tend to not mention requirements of degree.
+
+
+### Programming / Statistical Tools
+
 ```{r}
+# Extract tool variable
 tool_new = datascience %>% 
   mutate(
     python = ifelse(str_detect(.$description,  c("\\b[Pp][Yy][Tt][Hh][Oo][Nn]\\b")) == TRUE, 1, 0),
@@ -50,65 +101,9 @@ tool_new = datascience %>%
     )
 ```
 
-```{r fig.width = 10, fig.height = 6}
-tool_new %>% 
-  select(python:linux) %>% 
-  # sum of each column
-  colSums(., na.rm = TRUE) %>% 
-  as.tibble() %>% 
-  # extract the row names (tool names) and set them as the value of first column
-  cbind(tool = row.names(.), .) %>% 
-  # clean the original row names
-  `row.names<-.default`(1:17) %>% 
-  rename(sum = value) %>% 
-  mutate(
-    tool = str_to_title(tool),
-    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
-         ) %>% 
-  mutate(tool = fct_reorder(tool, sum)) %>% 
-  ggplot(aes(x = tool, y = sum, fill = tool)) +
-  geom_col() +
-  geom_text(aes(label = sum), hjust = -0.2, vjust = 0.4) +
-  coord_flip() +
-  labs(y = "Count") +
-  theme(
-    legend.position = "none",
-    axis.title.y = element_blank())
-```
 
-top 500 v.s. not top 500: Tool
-
-```{r}
-ax <- list(
-  title = ""
-)
-
-tool_new %>% 
-  gather(key = tool, value = value, python:linux) %>%
-  filter(value == 1) %>% 
-  count(flag, tool) %>% 
-  mutate(
-    flag = as.factor(flag),
-    flag = ifelse(flag == 1, "top500", "non_top500"),
-    tool = str_to_title(tool),
-    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
-         ) %>% 
-  spread(key = flag, value = n) %>% 
-  mutate(sum = non_top500 + top500,
-         tool = fct_reorder(tool, sum)) %>% 
-  plot_ly(.) %>% 
-  add_trace(y = ~tool, x = ~top500, type = "bar", name = "Fortune 500", marker = list(color = 'blue-teal')) %>%
-  add_trace(y = ~tool, x = ~non_top500, type = "bar", name = "Non-fortune 500", marker = list(color = 'lightblue')) %>%
-  layout(
-    title = "Fortune 500 v.s. Non-fortune 500: Most required tools",
-    xaxis = list(title = 'Count'), barmode = 'stack',
-    yaxis = ax
-    ) 
-```
-
-Tool - log odds ratio
-
-```{r}
+```{r fig.width = 10, fig.height = 8}
+# Tool - log odds ratio
 tool_new %>% 
   gather(key = tool, value = value, python:linux) %>%
   filter(value == 1) %>% 
@@ -131,16 +126,15 @@ tool_new %>%
   geom_col() +
   coord_flip() +
   ylab("log odds ratio") +
-  scale_fill_discrete(name = "")
+  scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
 ```
 
+### Rquired Skills 
 
+Extract skill variable and plot
 
-### Skills
-
-Extract skill variable and plot (Are the classifications right?)
-
-```{r}
+```{r fig.width = 10, fig.height = 10}
+# Extract skill variable and plot
 skill_new = datascience %>%
   mutate(
     machine_learning = ifelse(str_detect(.$description,  c("[Mm]achine [Ll]earning")) == TRUE, 1, 0),
@@ -161,67 +155,9 @@ skill_new = datascience %>%
   )
 ```
 
-Skills (bubble plot)
 
-```{r fig.width = 8, fig.height = 6}
-skill_bubble = skill_new %>% 
-  select(machine_learning:writing) %>% 
-  # sum of each column
-  colSums(., na.rm = TRUE) %>% 
-  as.tibble() %>% 
-  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artificial Intelligence", "Writing Skills"), .$value) %>% 
-  select(skills, sum = value) %>% 
-  `row.names<-.default`(1:10) %>% 
-  mutate(skills = fct_reorder(skills, sum))
-  
-# use packege`packcircles` to make bubble plot
-packing <- circleProgressiveLayout(skill_bubble$sum)
-dat.gg <- circleLayoutVertices(packing)
-
-plot_df <- cbind(skill_bubble, packing) 
-
-plot_df$text2 <- paste0(plot_df$skills,"\n",plot_df$sum)
-
-ggplot(data = dat.gg) +
-  geom_polygon(aes(x, y, group = id, fill =  id), show.legend = FALSE) +
-  scale_y_reverse() +
-  coord_equal() +
-  geom_text(data = plot_df, aes(x, y,label = text2)) +
-  scale_fill_distiller(palette = "RdYlBu") +
-  coord_flip() +
-  theme_void()
-```
-
-top 500 v.s. not top 500: Skills (bar chart)
-
-```{r}
-skill_new %>% 
-  gather(key = skill, value = value, machine_learning:writing) %>%
-  filter(value == 1) %>% 
-  count(flag, skill) %>% 
-  mutate(
-    flag = as.factor(flag),
-    flag = ifelse(flag == 1, "top500", "non_top500")
-         ) %>% 
-  spread(key = flag, value = n) %>% 
-  mutate(sum = non_top500 + top500) %>%
-  cbind(skills = c("Artifiical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
-  select(skills, 2, 3, 4) %>% 
-  mutate(skills = fct_reorder(skills, sum)) %>% 
-  plot_ly(.) %>% 
-  add_trace(y = ~skills, x = ~top500, type = "bar", name = "Fortune 500", width = .6, marker = list(color = 'lightseagreen')) %>%
-  add_trace(y = ~skills, x = ~non_top500, type = "bar", name = "Non-fortune 500", width = .6, marker = list(color = ' lightgreen')) %>%
-  layout(
-    title = "Fortune 500 v.s. Non-fortune 500: Most required skills",
-    yaxis = ax,
-    xaxis = list(title = 'Count'), barmode = 'stack',
-    bargap = 0.05
-    ) 
-```
-
-Skills - log odds ratio
-
-```{r}
+```{r fig.width = 12, fig.height = 8}
+# Skills - log odds ratio
 skill_new %>% 
   gather(key = skill, value = value, machine_learning:writing) %>%
   filter(value == 1) %>% 
