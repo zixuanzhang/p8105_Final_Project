@@ -280,7 +280,6 @@ skill_new %>%
     axis.text.y = element_text(size = 15),
     legend.text = element_text(size = 12)
     )
-
 ```
 
 Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 companies, while data mining, machine learning, artificial intelligence, deep learning, and modeling are more preferable to fortune 500 companies. It makes sense that non-fortune 500 companies just require general skills and elementary analytical skills, while fortune 500 companies desire their candidates to master much more advanced and professional data science skills.
