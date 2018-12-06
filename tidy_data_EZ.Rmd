@@ -125,12 +125,29 @@ for (i in c(1:length(pattern_bg))) {
   bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
 }
 
+# tree map
+bg_freq %>% 
+   treemap(index = "index", 
+          vSize = "freq_total", 
+           type = "index",
+           palette = "Blues")
 
-# bg_freq %>% 
-#   treemap(index = "index", 
-#           vSize = "freq", 
-#           type = "index",
-#           palette = "Blues")
+# log odds ratio
+bg_freq %>% 
+  select(index, top500, nontop500) %>% 
+  mutate(
+    non_top500_odds = (nontop500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(index = fct_reorder(index, log_OR)) %>%
+  ggplot(aes(index, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+
 ```
 
 ## word frequency count
