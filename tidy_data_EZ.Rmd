@@ -93,43 +93,44 @@ datascience_OR %>%
 
 ```{r, dpi = 300}
 pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
-               "[Ss]tatistic", 
-               "[Mm]ath", 
-               "[Qq]uantitative", 
-               "[Ee]conomic", 
-               "[Bb]iolog", 
-               "[Bb]iostatis", 
-               "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
-               "[Cc]hemical [Ee]ngineering", 
-               "[Pp]hysics", 
-               "\\bMB\\.?A\\b")
-name_bg = c("Computer Science", 
-          "Statistics", 
-          "Mathematics", 
-          "Quantitative", 
-          "Economics", 
-          "Biology", 
-          "Biostatistics", 
-          "Data Science", 
-          "Chemical Engineer", 
-          "Physics", 
-          "MBA")
+                 "[Ss]tatistic", 
+                 "[Mm]ath", 
+                 "[Qq]uantitative", 
+                 "[Ee]conomic", 
+                 "[Bb]iolog", 
+                 "[Bb]iostatis", 
+                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+                 "[Cc]hemical [Ee]ngineering")
+name_bg = c("computer science", 
+          "statistics", 
+          "mathematics", 
+          "quantitative", 
+          "economics", 
+          "biology", 
+          "biostatistics", 
+          "data science", 
+          "engineer")
 
 bg_freq = data.frame(
   background = pattern_bg, 
   index = name_bg, 
-  freq = rep(0, length(pattern_bg))
+  freq_total = rep(0, length(pattern_bg)), 
+  top500 = rep(0, length(pattern_bg)), 
+  nontop500 = rep(0, length(pattern_bg)) 
 )
 
 for (i in c(1:length(pattern_bg))) {
-  bg_freq$freq[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$freq_total[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$top500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
+  bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
 }
 
-bg_freq %>% 
-  treemap(index = "index", 
-          vSize = "freq", 
-          type = "index",
-          palette = "Blues")
+
+# bg_freq %>% 
+#   treemap(index = "index", 
+#           vSize = "freq", 
+#           type = "index",
+#           palette = "Blues")
 ```
 
 ## word frequency count
