@@ -64,7 +64,7 @@ Results
 
 The “Occupational Employment Statistics” data bases its classification of occupations on Standard Occupational Classification (SOC). According to this standard, we will refer one of the major categories “Computer and Mathematical Occupations" with SOC code “15-0000” to our occupation of interest “data scientists and data-science-related professions”, for analysis based on this data in the following.
 
-![Figure 1 - Comparison of 10 year trend of median annual salary (in dollars)](report_pics/intro_1_10yr_salary.png){width = 80%}
+<img src="report_pics/intro_1_10yr_salary.png" alt="Figure 1 - Comparison of 10 year trend of median annual salary (in dollars)" style="width:80.0%" />
 
 Graph 1 compares the 23 major occupation groups (including the “all occupations” which represents the national average level) where the medians of annual salary of computer and mathematical occupations are plotted in black. Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from $71270 to $84560, with a greater percentage of increase than the national average salary.
 
