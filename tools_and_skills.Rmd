@@ -97,9 +97,10 @@ tool_new %>%
   mutate(sum = non_top500 + top500,
          tool = fct_reorder(tool, sum)) %>% 
   plot_ly(.) %>% 
-  add_trace(y = ~tool, x = ~top500, type = "bar", name = "Top 500", marker = list(color = 'blue-teal')) %>%
-  add_trace(y = ~tool, x = ~non_top500, type = "bar", name = "Non-top 500", marker = list(color = 'lightblue')) %>%
+  add_trace(y = ~tool, x = ~top500, type = "bar", name = "Fortune 500", marker = list(color = 'blue-teal')) %>%
+  add_trace(y = ~tool, x = ~non_top500, type = "bar", name = "Non-fortune 500", marker = list(color = 'lightblue')) %>%
   layout(
+    title = "Fortune 500 v.s. Non-fortune 500: Most required tools",
     xaxis = list(title = 'Count'), barmode = 'stack',
     yaxis = ax
     ) 
@@ -208,9 +209,10 @@ skill_new %>%
   select(skills, 2, 3, 4) %>% 
   mutate(skills = fct_reorder(skills, sum)) %>% 
   plot_ly(.) %>% 
-  add_trace(y = ~skills, x = ~top500, type = "bar", name = "Top 500", width = .6, marker = list(color = 'lightseagreen')) %>%
-  add_trace(y = ~skills, x = ~non_top500, type = "bar", name = "Non-top 500", width = .6, marker = list(color = ' lightgreen')) %>%
+  add_trace(y = ~skills, x = ~top500, type = "bar", name = "Fortune 500", width = .6, marker = list(color = 'lightseagreen')) %>%
+  add_trace(y = ~skills, x = ~non_top500, type = "bar", name = "Non-fortune 500", width = .6, marker = list(color = ' lightgreen')) %>%
   layout(
+    title = "Fortune 500 v.s. Non-fortune 500: Most required skills",
     yaxis = ax,
     xaxis = list(title = 'Count'), barmode = 'stack',
     bargap = 0.05

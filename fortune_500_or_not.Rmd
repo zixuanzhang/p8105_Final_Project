@@ -1,0 +1,248 @@
+---
+title: "Fortune 500 v.s. Non-fortune 500" 
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = F, 
+                      message = F)
+library(tidyverse)
+library(readr)
+library(rvest)
+library(stringr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(treemap)
+library(plotly)
+library(packcircles) # bubble plot
+
+theme_set(theme_bw())
+```
+
+
+```{r read_data}
+# Read data
+datascience <- read_csv("./data/ds_500.csv")
+```
+
+### Minimum Requirement of Degree
+
+```{r, dpi = 300}
+## minimum requirement of degree
+pattern_hi = "[Hh]igh [Ss]chool"
+pattern_ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
+pattern_ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
+pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b | \\b[Dd]octoral\\b"
+```
+
+```{r fig.width = 10, fig.height = 6}
+datascience_OR <- datascience %>% 
+  mutate(high_school = ifelse(str_detect(.$description, pattern_hi) == TRUE, 1, 0),
+         bachelor = ifelse(str_detect(.$description, pattern_ba) == TRUE, 1, 0),
+         master = ifelse(str_detect(.$description, pattern_ma) == TRUE, 1, 0), 
+         phd = ifelse(str_detect(.$description, pattern_phd) == TRUE, 1, 0), 
+         other = high_school + bachelor + master + phd) %>% # if other == 0, means non degree has been found
+  mutate(flag = ifelse(flag == 1, "top500", "non_top500"), 
+         flag = as.factor(flag), 
+         other = ifelse(other == 0, 1, 0)) %>% # if other == 0, means non degree has been found
+  gather(key = degree, value = indicator, high_school:other) %>% 
+  count(flag, degree, indicator != 0) %>% 
+  filter(`indicator != 0` == "TRUE") %>% 
+  select(-`indicator != 0`) %>% 
+  spread(key = flag, value = n)
+
+datascience_OR %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(degree = fct_reorder(degree, log_OR)) %>%
+  ggplot(aes(degree, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
+
+
+High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. “Other” means that the job descriptions do not contain information of degree, and this category falls more frequently in Non-fortune 500 corporations.
+
+<br/>
+
+### Related Background
+
+```{r, dpi = 300}
+pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
+                 "[Ss]tatistic", 
+                 "[Mm]ath", 
+                 "[Qq]uantitative", 
+                 "[Ee]conomic", 
+                 "[Bb]iolog", 
+                 "[Bb]iostatis", 
+                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+                 "[Cc]hemical [Ee]ngineering")
+name_bg = c("computer science", 
+          "statistics", 
+          "mathematics", 
+          "quantitative", 
+          "economics", 
+          "biology", 
+          "biostatistics", 
+          "data science", 
+          "engineer")
+
+bg_freq = data.frame(
+  background = pattern_bg, 
+  index = name_bg, 
+  freq_total = rep(0, length(pattern_bg)), 
+  top500 = rep(0, length(pattern_bg)), 
+  nontop500 = rep(0, length(pattern_bg)) 
+)
+
+for (i in c(1:length(pattern_bg))) {
+  bg_freq$freq_total[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$top500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
+  bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
+}
+
+# log odds ratio
+bg_freq %>% 
+  select(index, top500, nontop500) %>% 
+  mutate(
+    non_top500_odds = (nontop500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(index = fct_reorder(index, log_OR)) %>%
+  ggplot(aes(index, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
+
+<br/>
+
+### Programming / Statistical Tools
+
+```{r}
+# Extract tool variable
+tool_new = datascience %>% 
+  mutate(
+    python = ifelse(str_detect(.$description,  c("\\b[Pp][Yy][Tt][Hh][Oo][Nn]\\b")) == TRUE, 1, 0),
+    excel = ifelse(str_detect(.$description,  c("\\b[Ee][Xx][Cc][Ee][Ll]\\b")) == TRUE, 1, 0),
+    r = ifelse(str_detect(.$description,  c("\\b[Rr]\\b")) == TRUE, 1, 0),
+    sql = ifelse(str_detect(.$description,  c("\\b[Ss][Qq][Ll]\\b")) == TRUE, 1, 0),
+    java = ifelse(str_detect(.$description,  c("\\b[Jj][Aa][Vv][Aa]\\b")) == TRUE, 1, 0),
+    tableau = ifelse(str_detect(.$description,  c("\\b[Tt][Aa][Bb][Ll][Ee][Aa][Uu]\\b")) == TRUE, 1, 0),
+    sas = ifelse(str_detect(.$description,  c("\\b[Ss][Aa][Ss]\\b")) == TRUE, 1, 0),
+    matlab =  ifelse(str_detect(.$description,  c("\\b[Mm][Aa][Tt][Ll][Aa][Bb]\\b")) == TRUE, 1, 0),
+    c = ifelse(str_detect(.$description,  c("\\b[Cc]\\b")) == TRUE, 1, 0),
+    perl = ifelse(str_detect(.$description,  c("\\b[Pp][Ee][Rr][Ll]\\b")) == TRUE, 1, 0), 
+    scala = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Ll][Aa]\\b")) == TRUE, 1, 0), 
+    spark = ifelse(str_detect(.$description,  c("\\b[Ss][Pp][Aa][Rr][Kk]\\b")) == TRUE, 1, 0), 
+    hadoop = ifelse(str_detect(.$description,  c("\\b[Hh][Aa][Dd][Oo][Oo][Pp]\\b")) == TRUE, 1, 0), 
+    aws = ifelse(str_detect(.$description,  c("\\b[Aa][Ww][Ss]\\b")) == TRUE, 1, 0),
+    hive = ifelse(str_detect(.$description,  c("\\b[Hh][Ii][Vv][Ee]\\b")) == TRUE, 1, 0),
+    tensorflow = ifelse(str_detect(.$description,  c("\\b[Tt][Ee][Nn][Ss][Oo][Rr][Ff][Ll][Oo][Ww]\\b")) == TRUE, 1, 0),
+    linux = ifelse(str_detect(.$description,  c("\\b[Ll][Ii][Nn][Uu][Xx]\\b")) == TRUE, 1, 0)
+    )
+```
+
+
+```{r fig.width = 10, fig.height = 8}
+# Tool - log odds ratio
+tool_new %>% 
+  gather(key = tool, value = value, python:linux) %>%
+  filter(value == 1) %>% 
+  count(flag, tool) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500"),
+    tool = str_to_title(tool),
+    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+    ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(tool = fct_reorder(tool, log_OR)) %>%
+  ggplot(aes(tool, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
+```
+
+Excel, followed by Tableau and SQL are more required by non-fortune 500 corporations, while fortune 500 corporations are more likely to prefer applicants with high-level programming tool, such as Perl, C/C++, and Java.
+
+
+<br/>
+
+### Rquired Skills 
+
+Extract skill variable and plot
+
+```{r fig.width = 10, fig.height = 10}
+# Extract skill variable and plot
+skill_new = datascience %>%
+  mutate(
+    machine_learning = ifelse(str_detect(.$description,  c("[Mm]achine [Ll]earning")) == TRUE, 1, 0),
+    deep_learning = ifelse(str_detect(.$description,  c("[Dd]eep [Ll]earning")) == TRUE, 1, 0),
+    # Data Manipulation & Analysis
+    data_mani_ana = ifelse(str_detect(.$description,  c("[Dd]ata [Aa]nalysis|[Dd]ata [Mm]anipulation|[Dd]ata [Mm]anagement|[Dd]ata [Ee]valuation|[Ss]tatistical [Aa]nalysis|[Rr]egression")) == TRUE, 1, 0),
+    # data visualization
+    data_visul = ifelse(str_detect(.$description,  c("[Dd]ata [Vv]isualization")) == TRUE, 1, 0),
+    data_mining = ifelse(str_detect(.$description,  c("[Dd]ata [Mm]ining")) == TRUE, 1, 0),
+    modeling = ifelse(str_detect(.$description,  c("[Mm]odeling")) == TRUE, 1, 0),
+    # include machine learning optimization, data optimization, mathematical optimization???
+    optimization = ifelse(str_detect(.$description,  c("[Oo]ptimization")) == TRUE, 1, 0),
+    # interpersonal skills
+    interpersonal = ifelse(str_detect(.$description,  c("[Ii]nterpersonal [Ss]kill|[Cc]ommunication|[Ll]istening [Ss]kill|[Tt]eam [Ww]orking|[Nn]egotiation|[Ee]motional [Ii]ntelligence|[Cc]onflict [Rr]esolution|[Pp]roblem [Ss]olving|[Dd]ecision [Mm]aking")) == TRUE, 1, 0),
+    # artifical intelligence
+    arti_inte = ifelse(str_detect(.$description,  c("\\bAI\\b|[Nn]eural [Nn]etwork")) == TRUE, 1, 0),
+    writing = ifelse(str_detect(.$description,  c("[Ww]riting")) == TRUE, 1, 0)
+  )
+```
+
+
+```{r fig.width = 12, fig.height = 8}
+# Skills - log odds ratio
+skill_new %>% 
+  gather(key = skill, value = value, machine_learning:writing) %>%
+  filter(value == 1) %>% 
+  count(flag, skill) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  cbind(skills = c("Artificial Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
+  select(skills, 2, 3) %>% 
+  mutate(
+    non_top500_odds = (non_top500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+    ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(skills = fct_reorder(skills, log_OR)) %>%
+  ggplot(aes(skills, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
+
+```
+
+Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 corporations, while data mining, machine learning, artificial intelligence, deep learning, and modeling are much more preferable to fortune 500 corporations. It makes sense that non-fortune 500 corporations just require employees to master general skills and elementary data science skills, while fortune 500 corporations desire their employees to master more advanced data science skills.
