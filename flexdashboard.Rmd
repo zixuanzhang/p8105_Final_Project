@@ -97,23 +97,23 @@ bg_freq = data.frame(
   background = pattern_bg, 
   index = name_bg, 
   freq_total = rep(0, length(pattern_bg)), 
-  top500 = rep(0, length(pattern_bg)), 
-  nontop500 = rep(0, length(pattern_bg)) 
+  fortune500 = rep(0, length(pattern_bg)), 
+  nonfortune500 = rep(0, length(pattern_bg)) 
 )
 
 for (i in c(1:length(pattern_bg))) {
   bg_freq$freq_total[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
-  bg_freq$top500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
-  bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
+  bg_freq$fortune500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
+  bg_freq$nonfortune500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
 }
 
 n_top500 = sum(datascience$flag == 1)
 n_nontop500 = sum(datascience$flag == 0)
 bg_freq = 
   bg_freq %>% 
-  gather(key = subgroup, value = freq, top500:nontop500) %>% 
-  mutate(freq_ratio = ifelse(subgroup == "top500", freq/n_top500, freq/n_nontop500)) %>% 
-  mutate(subgroup = paste("For ", subgroup, ": ", freq, " out of ", ifelse(subgroup == "top500", n_top500, n_nontop500), ", ratio = ", round(freq_ratio*100, digits = 1), "%", sep = ""))
+  gather(key = subgroup, value = freq, fortune500:nonfortune500) %>% 
+  mutate(freq_ratio = ifelse(subgroup == "fortune500", freq/n_top500, freq/n_nontop500)) %>% 
+  mutate(subgroup = paste(subgroup, ": n = ", freq, " (out of ", ifelse(subgroup == "fortune500", n_top500, n_nontop500), " companies, ratio = ", round(freq_ratio*100, digits = 1), "%)", sep = ""))
 
 p = 
 treemap(

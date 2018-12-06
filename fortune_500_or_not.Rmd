@@ -40,7 +40,7 @@ pattern_ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
 pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b | \\b[Dd]octoral\\b"
 ```
 
-```{r fig.width = 10, fig.height = 6}
+```{r message = FALSE}
 datascience_OR <- datascience %>% 
   mutate(high_school = ifelse(str_detect(.$description, pattern_hi) == TRUE, 1, 0),
          bachelor = ifelse(str_detect(.$description, pattern_ba) == TRUE, 1, 0),
@@ -57,23 +57,88 @@ datascience_OR <- datascience %>%
   spread(key = flag, value = n)
 
 datascience_OR %>% 
+  mutate(degree = str_to_title(degree),
+         degree = recode(degree, High_school = "High School")) %>% 
   mutate(
     non_top500_odds = (non_top500) / sum(datascience$flag == 0),
     top500_odds  = (top500) / sum(datascience$flag == 1),
     log_OR = log(top500_odds / non_top500_odds)
   ) %>% 
-  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "Fortune 500 > Non-fortune 500", "Non-fortune 500 > Fortune 500")) %>% 
   mutate(degree = fct_reorder(degree, log_OR)) %>%
   ggplot(aes(degree, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
+  xlab("Degree") +
   ylab("log odds ratio") +
-  scale_fill_discrete(name = "")
+  scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "steelblue", "Non-fortune 500 > Fortune 500" = "black"))
 ```
 
 
-High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. Non-fortune 500 corporations tend to not mention requirements of degree.
+High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. “Other” means that the job descriptions do not contain information of degree, and this category falls more frequently in Non-fortune 500 corporations.
 
+<br/>
+
+### Related Academic Background
+
+```{r, dpi = 300}
+pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
+                 "[Ss]tatistic", 
+                 "[Mm]ath", 
+                 "[Qq]uantitative", 
+                 "[Ee]conomic", 
+                 "[Bb]iolog", 
+                 "[Bb]iostatis", 
+                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+                 "[Cc]hemical [Ee]ngineering")
+name_bg = c("computer science", 
+          "statistics", 
+          "mathematics", 
+          "quantitative", 
+          "economics", 
+          "biology", 
+          "biostatistics", 
+          "data science", 
+          "engineer")
+
+bg_freq = data.frame(
+  background = pattern_bg, 
+  index = name_bg, 
+  freq_total = rep(0, length(pattern_bg)), 
+  top500 = rep(0, length(pattern_bg)), 
+  nontop500 = rep(0, length(pattern_bg)) 
+)
+
+for (i in c(1:length(pattern_bg))) {
+  bg_freq$freq_total[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$top500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
+  bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
+}
+
+# log odds ratio
+bg_freq %>% 
+  select(index, top500, nontop500) %>% 
+  mutate(
+    non_top500_odds = (nontop500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "Fortune 500 > Non-fortune 500", "Non-fortune 500 > Fortune 500")) %>% 
+  mutate(
+    index = str_to_title(index),
+    index = fct_reorder(index, log_OR)
+    ) %>%
+  ggplot(aes(index, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  xlab("Academic Background") +
+  ylab("log odds ratio") +
+  scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "firebrick3", "Non-fortune 500 > Fortune 500" = "black"))
+```
+
+Employees with background in Computer Science and Mathemetics are more preferable to fortune 500 corporations, while non-fortune 500 corporations mention Biostatistics, Engineer, Biology more in their job posts.
+
+<br/>
 
 ### Programming / Statistical Tools
 
@@ -120,20 +185,25 @@ tool_new %>%
     top500_odds  = (top500) / sum(datascience$flag == 1),
     log_OR = log(top500_odds / non_top500_odds)
     ) %>% 
-  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "Fortune 500 > Non-fortune 500", "Non-fortune 500 > Fortune 500")) %>% 
   mutate(tool = fct_reorder(tool, log_OR)) %>%
   ggplot(aes(tool, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
   ylab("log odds ratio") +
-  scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
+  scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "orange", "Non-fortune 500 > Fortune 500" = "black"))
 ```
+
+Excel, followed by Tableau and SQL are more required by non-fortune 500 corporations, while fortune 500 corporations are more likely to prefer applicants with high-level programming tool, such as Perl, C/C++, and Java.
+
+
+<br/>
 
 ### Rquired Skills 
 
 Extract skill variable and plot
 
-```{r fig.width = 10, fig.height = 10}
+```{r fig.width = 12, fig.height = 8}
 # Extract skill variable and plot
 skill_new = datascience %>%
   mutate(
@@ -174,13 +244,14 @@ skill_new %>%
     top500_odds  = (top500) / sum(datascience$flag == 1),
     log_OR = log(top500_odds / non_top500_odds)
     ) %>% 
-  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "Fortune 500 > Non-fortune 500", "Non-fortune 500 > Fortune 500")) %>% 
   mutate(skills = fct_reorder(skills, log_OR)) %>%
   ggplot(aes(skills, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
   ylab("log odds ratio") +
-  scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
+  scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "springgreen4", "Non-fortune 500 > Fortune 500" = "black"))
 
 ```
 
+Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 corporations, while data mining, machine learning, artificial intelligence, deep learning, and modeling are much more preferable to fortune 500 corporations. It makes sense that non-fortune 500 corporations just require employees to master general skills and elementary data science skills, while fortune 500 corporations desire their employees to master more advanced and professional data science skills.
