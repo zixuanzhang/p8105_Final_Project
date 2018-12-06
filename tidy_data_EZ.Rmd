@@ -216,7 +216,7 @@ inspection_words %>%
 
 word cloud
 
-``` {r, dpi = 300}
+```{r, dpi = 300}
 word_cloud2 <- inspection_words %>%
   nest(word) %>%
   mutate(text = map(data, unlist), 
@@ -226,8 +226,10 @@ word_cloud2 <- inspection_words %>%
   count(word, sort = TRUE) %>% 
   top_n(50) 
 
+#png("wordcloud.jpg", width = 400, height = 400)
 wordcloud(words = word_cloud2$word, freq = word_cloud2$n, random.order=FALSE,
           rot.per=0.35, colors=brewer.pal(8, "Dark2"))
+#dev.off()
 ```
 
 *  Three words
