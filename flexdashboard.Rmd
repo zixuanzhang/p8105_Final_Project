@@ -113,7 +113,7 @@ bg_freq =
   bg_freq %>% 
   gather(key = subgroup, value = freq, fortune500:nonfortune500) %>% 
   mutate(freq_ratio = ifelse(subgroup == "fortune500", freq/n_top500, freq/n_nontop500)) %>% 
-  mutate(subgroup = paste(subgroup, ": n = ", freq, " (out of ", ifelse(subgroup == "fortune500", n_top500, n_nontop500), " companies, ratio = ", round(freq_ratio*100, digits = 1), "%)", sep = ""))
+  mutate(subgroup = paste(subgroup, ": n = ", freq, " (out of ", ifelse(subgroup == "fortune500", n_top500, n_nontop500), " job postings, ratio = ", round(freq_ratio*100, digits = 1), "%)", sep = ""))
 
 p = 
 treemap(
