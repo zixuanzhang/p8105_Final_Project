@@ -1,0 +1,106 @@
+---
+title: "Introduction_Plotly"
+author: "Jiayi Shen"
+date: "12/5/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(plotly)
+library(readxl)
+```
+
+## Reviewing U.S. job market of data scientists in recent 10 years
+
+```{r read and tidy labor data}
+#read national Occupational Employment Statistics data
+read_national_data = function(file_yr) {
+  df = 
+  read_excel(str_c("data/national_10yr/national_", file_yr, ".xls")) %>% 
+  janitor::clean_names() %>% 
+  filter(str_detect(occ_code, "0000$")) %>%
+  mutate(year = file_yr) %>% 
+  mutate(a_mean = as.numeric(a_mean), 
+         a_median = as.numeric(a_median),
+         tot_emp = as.numeric(tot_emp),
+         mean_prse = as.numeric(mean_prse)) %>% 
+  select(year, tot_emp, occ_code, occ_title, a_mean, mean_prse, a_median) 
+  
+  df
+}
+
+#aggregate all 10 years' data in one data frame
+national_df = map_df(2008:2017, read_national_data) %>% unnest()
+
+#tidy occupation titles
+national_df = 
+national_df %>% 
+  mutate(occ_title = tolower(occ_title)) %>% 
+  mutate(occ_title = str_replace(occ_title, 
+                                 "computer and mathematical science occupations", 
+                                 "computer and mathematical occupations"),
+         occ_title = str_replace(occ_title, 
+                                 "community and social service occupations", 
+                                 "community and social services occupations"),
+         occ_title = str_replace(occ_title, 
+                                 "healthcare practitioner and technical occupations", 
+                                 "healthcare practitioners and technical occupations")) 
+
+```
+
+The “Occupational Employment Statistics” data bases its classification of occupations on Standard Occupational Classification (SOC). According to this standard, we will refer one of the major categories “Computer and Mathematical Occupations" with SOC code “15-0000” to our occupation of interest “data scientists and data-science-related  professions”, for analysis based on this data in the following.   
+
+```{r 10 yr trend across occupations, warning=FALSE, message=FALSE}
+#plotting the 10-yr trend of median annual salary across all major fields.
+national_df %>%
+  group_by(occ_code) %>% 
+  mutate(hover = paste(occ_title, '<br>',
+                       "Year:", year, '<br>',
+                      "Median Salary: $", round(a_median, 2))) %>% 
+  plot_ly(x = ~year, y = ~a_median, color = ~occ_title,
+         type = 'scatter', mode = 'lines+markers', text = ~hover) %>% 
+  layout(showlegend = FALSE,
+         title = "10-year trend of median annual salary by occupations in the U.S.",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Mean Annual Salary($)"))
+ 
+```
+
+Ranked the second following “management occupations” since 2011, computer and mathematical-related professions are generally a well-paid working force community in the U.S. In recent 10 years, the median annual salary in this field raised from \$71270 to \$84560, with a greater percentage of increase than the national average.   
+
+```{r plotting increment rate, dpi = 300}
+#create color panel for plotting
+cbbPalette = c( "#CC6666", "#56B4E9", "#009E73","#000000", "#F0E442", "#0072B2", "#E69F00")
+
+#Compare the increment rate of total employment in our selected occupational fields
+national_df %>% 
+  group_by(occ_code) %>% 
+  arrange(year) %>% 
+  mutate(increment = ifelse(year == 2008 ,0, diff(tot_emp, 1,1))) %>% 
+  mutate(increment_p = increment / tot_emp) %>%
+  mutate(hover = paste(round(increment_p*100, 2), "% Increment",'<br>',
+                        "Total Employment:", round(tot_emp,2) ,'<br>',
+                        "Median Salary: $", round(a_median, 2))) %>% 
+  filter(occ_code %in% c("13-0000",
+                         "15-0000",
+                         "17-0000",
+                         "19-0000",
+                         "29-0000",
+                         "41-0000",
+                         "00-0000"),
+         year != "2008") %>%
+  plot_ly(x = ~year, y = ~increment_p*100, color = ~occ_title, 
+            type = 'scatter', mode = 'lines+markers', text = ~hover)%>% 
+  layout(legend = list(x = 0.7,y = 0.4),
+         title = "Employment increment rate by occupations in the U.S.",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Annual percentage increase(%) in total empolyment"))
+  
+
+
+```
+
+
+Though the median annual salary of data-science related professions follow a trend of steady increase in recent years, the number of total employment in this field since 2014 did not increase as fast as 2010 and 2011. Plotted in black in graph 2, the employment in computer and mathematical field has been increasing at a greater rate than many other professions that generally require qualifications from higher education. Even so, the rate dropped significantly after 2015 and reached below 0 in 2017.  

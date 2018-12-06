@@ -20,7 +20,6 @@ library(treemap)
 library(ggplot2)
 library(ggmap)
 library(plotly)
-library(treemap)
 library(d3treeR)
 # devtools::install_github("timelyportfolio/d3treeR")
 ```
@@ -126,7 +125,7 @@ treemap(
     )
 ```
 
-```{r salary and vacancy, message=FALSE, warning=FALSE, include=F}
+```{r read and tidy labor data, include = FALSE}
 #read national Occupational Employment Statistics data
 read_national_data = function(file_yr) {
   df = 
@@ -159,7 +158,9 @@ national_df %>%
          occ_title = str_replace(occ_title, 
                                  "healthcare practitioner and technical occupations", 
                                  "healthcare practitioners and technical occupations")) 
+
 ```
+
 
 
 Column {data-width=550}
@@ -193,31 +194,50 @@ Column {data-width=450, .tabset}
 
 ### Job Vacancy
 
-```{r}
+```{r plotting increment rate}
+
+#Compare the increment rate of total employment in our selected occupational fields
+national_df %>% 
+  group_by(occ_code) %>% 
+  arrange(year) %>% 
+  mutate(increment = ifelse(year == 2008 ,0, diff(tot_emp, 1,1))) %>% 
+  mutate(increment_p = increment / tot_emp) %>%
+  mutate(hover = paste(round(increment_p*100, 2), "% Increment",'<br>',
+                        "Total Employment:", round(tot_emp,2) ,'<br>',
+                        "Median Salary: $", round(a_median, 2))) %>% 
+  filter(occ_code %in% c("13-0000",
+                         "15-0000",
+                         "17-0000",
+                         "19-0000",
+                         "29-0000",
+                         "41-0000",
+                         "00-0000"),
+         year != "2008") %>%
+  plot_ly(x = ~year, y = ~increment_p*100, color = ~occ_title, 
+            type = 'scatter', mode = 'lines+markers', text = ~hover)%>% 
+  layout(legend = list(x = 0.7,y = 0.4),
+         title = "Employment increment rate by occupations in the U.S.",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Annual percentage increase(%) in total empolyment"))
 
 ```
 
 ### Annual Salary Change
 
-```{r}
+```{r 10 yr salary trend across occupations, warning=FALSE, message=FALSE}
+#plotting the 10-yr trend of median annual salary across all major fields.
 national_df %>%
-  filter(occ_code != "15-0000") %>% 
-  group_by(year) %>% 
-  arrange(desc(tot_emp)) %>%
-  ggplot(aes(x = year, y = a_median, color = occ_title))+
-  geom_line()+
-  geom_point()+
-  geom_line(data = filter(national_df, occ_code == "15-0000"), color = "black")+
-  geom_point(data = filter(national_df, occ_code == "15-0000"), color = "black")+
-  labs(x = "Year",
-       y = "Mean Annual Salary in dollars",
-       color = "Occupation\nTitle",
-       title = "10-year trend of median annual salary change across different occupations in the U.S",
-       caption = "(based on data from Bureau of Labor Statistics)") +
-  scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017)) +
-  theme(legend.position="bottom", 
-        legend.text = element_text(size=8))+
-  guides(colour = guide_legend(nrow = 8))
+  group_by(occ_code) %>% 
+  mutate(hover = paste(occ_title, '<br>',
+                       "Year:", year, '<br>',
+                      "Median Salary: $", round(a_median, 2))) %>% 
+  plot_ly(x = ~year, y = ~a_median, color = ~occ_title,
+         type = 'scatter', mode = 'lines+markers', text = ~hover) %>% 
+  layout(showlegend = FALSE,
+         title = "10-year trend of median annual salary<br>by occupations in the U.S.",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Mean Annual Salary($)"))
+ 
 ```
 
 ### Required Tools
