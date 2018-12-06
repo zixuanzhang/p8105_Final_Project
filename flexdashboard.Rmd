@@ -21,6 +21,7 @@ library(ggplot2)
 library(ggmap)
 library(plotly)
 library(d3treeR)
+library(packcircles)
 # devtools::install_github("timelyportfolio/d3treeR")
 ```
 
@@ -162,7 +163,49 @@ national_df %>%
 ```
 
 ```{r tools and skills, message=FALSE, warning=FALSE, include=F}
+datascience <- read_csv("./data/ds_500.csv")
 
+# Extract tool variable
+tool_new = datascience %>% 
+  mutate(
+    python = ifelse(str_detect(.$description,  c("\\b[Pp][Yy][Tt][Hh][Oo][Nn]\\b")) == TRUE, 1, 0),
+    excel = ifelse(str_detect(.$description,  c("\\b[Ee][Xx][Cc][Ee][Ll]\\b")) == TRUE, 1, 0),
+    r = ifelse(str_detect(.$description,  c("\\b[Rr]\\b")) == TRUE, 1, 0),
+    sql = ifelse(str_detect(.$description,  c("\\b[Ss][Qq][Ll]\\b")) == TRUE, 1, 0),
+    java = ifelse(str_detect(.$description,  c("\\b[Jj][Aa][Vv][Aa]\\b")) == TRUE, 1, 0),
+    tableau = ifelse(str_detect(.$description,  c("\\b[Tt][Aa][Bb][Ll][Ee][Aa][Uu]\\b")) == TRUE, 1, 0),
+    sas = ifelse(str_detect(.$description,  c("\\b[Ss][Aa][Ss]\\b")) == TRUE, 1, 0),
+    matlab =  ifelse(str_detect(.$description,  c("\\b[Mm][Aa][Tt][Ll][Aa][Bb]\\b")) == TRUE, 1, 0),
+    c = ifelse(str_detect(.$description,  c("\\b[Cc]\\b")) == TRUE, 1, 0),
+    perl = ifelse(str_detect(.$description,  c("\\b[Pp][Ee][Rr][Ll]\\b")) == TRUE, 1, 0), 
+    scala = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Ll][Aa]\\b")) == TRUE, 1, 0), 
+    spark = ifelse(str_detect(.$description,  c("\\b[Ss][Pp][Aa][Rr][Kk]\\b")) == TRUE, 1, 0), 
+    hadoop = ifelse(str_detect(.$description,  c("\\b[Hh][Aa][Dd][Oo][Oo][Pp]\\b")) == TRUE, 1, 0), 
+    aws = ifelse(str_detect(.$description,  c("\\b[Aa][Ww][Ss]\\b")) == TRUE, 1, 0),
+    hive = ifelse(str_detect(.$description,  c("\\b[Hh][Ii][Vv][Ee]\\b")) == TRUE, 1, 0),
+    tensorflow = ifelse(str_detect(.$description,  c("\\b[Tt][Ee][Nn][Ss][Oo][Rr][Ff][Ll][Oo][Ww]\\b")) == TRUE, 1, 0),
+    linux = ifelse(str_detect(.$description,  c("\\b[Ll][Ii][Nn][Uu][Xx]\\b")) == TRUE, 1, 0)
+    )
+
+# Extract skill variable
+skill_new = datascience %>%
+  mutate(
+    machine_learning = ifelse(str_detect(.$description,  c("[Mm]achine [Ll]earning")) == TRUE, 1, 0),
+    deep_learning = ifelse(str_detect(.$description,  c("[Dd]eep [Ll]earning")) == TRUE, 1, 0),
+    # Data Manipulation & Analysis
+    data_mani_ana = ifelse(str_detect(.$description,  c("[Dd]ata [Aa]nalysis|[Dd]ata [Mm]anipulation|[Dd]ata [Mm]anagement|[Dd]ata [Ee]valuation|[Ss]tatistical [Aa]nalysis|[Rr]egression")) == TRUE, 1, 0),
+    # data visualization
+    data_visul = ifelse(str_detect(.$description,  c("[Dd]ata [Vv]isualization")) == TRUE, 1, 0),
+    data_mining = ifelse(str_detect(.$description,  c("[Dd]ata [Mm]ining")) == TRUE, 1, 0),
+    modeling = ifelse(str_detect(.$description,  c("[Mm]odeling")) == TRUE, 1, 0),
+    # include machine learning optimization, data optimization, mathematical optimization???
+    optimization = ifelse(str_detect(.$description,  c("[Oo]ptimization")) == TRUE, 1, 0),
+    # interpersonal skills
+    interpersonal = ifelse(str_detect(.$description,  c("[Ii]nterpersonal [Ss]kill|[Cc]ommunication|[Ll]istening [Ss]kill|[Tt]eam [Ww]orking|[Nn]egotiation|[Ee]motional [Ii]ntelligence|[Cc]onflict [Rr]esolution|[Pp]roblem [Ss]olving|[Dd]ecision [Mm]aking")) == TRUE, 1, 0),
+    # artifical intelligence
+    arti_inte = ifelse(str_detect(.$description,  c("\\bAI\\b|[Nn]eural [Nn]etwork")) == TRUE, 1, 0),
+    writing = ifelse(str_detect(.$description,  c("[Ww]riting")) == TRUE, 1, 0)
+  )
 ```
 
 Column {data-width=550}
@@ -245,11 +288,56 @@ national_df %>%
 ### Required Tools
 
 ```{r}
+ax <- list(
+  title = ""
+)
 
+tool_new %>% 
+  gather(key = tool, value = value, python:linux) %>%
+  filter(value == 1) %>% 
+  count(flag, tool) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500"),
+    tool = str_to_title(tool),
+    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  mutate(sum = non_top500 + top500,
+         tool = fct_reorder(tool, sum)) %>% 
+  plot_ly(.) %>% 
+  add_trace(y = ~tool, x = ~top500, type = "bar", name = "Fortune 500", marker = list(color = 'blue-teal')) %>%
+  add_trace(y = ~tool, x = ~non_top500, type = "bar", name = "Non-fortune 500", marker = list(color = 'lightblue')) %>%
+  layout(
+    title = "Fortune 500 v.s. Non-fortune 500: Most required tools",
+    xaxis = list(title = 'Count'), barmode = 'stack',
+    yaxis = ax
+    )
 ```
 
 ### Required Skills
 
 ```{r}
-
+skill_new %>% 
+  gather(key = skill, value = value, machine_learning:writing) %>%
+  filter(value == 1) %>% 
+  count(flag, skill) %>% 
+  mutate(
+    flag = as.factor(flag),
+    flag = ifelse(flag == 1, "top500", "non_top500")
+         ) %>% 
+  spread(key = flag, value = n) %>% 
+  mutate(sum = non_top500 + top500) %>%
+  cbind(skills = c("Artifiical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
+  select(skills, 2, 3, 4) %>% 
+  mutate(skills = fct_reorder(skills, sum)) %>% 
+  plot_ly(.) %>% 
+  add_trace(y = ~skills, x = ~top500, type = "bar", name = "Fortune 500", width = .6, marker = list(color = 'lightseagreen')) %>%
+  add_trace(y = ~skills, x = ~non_top500, type = "bar", name = "Non-fortune 500", width = .6, marker = list(color = ' lightgreen')) %>%
+  layout(
+    title = "Fortune 500 v.s. Non-fortune 500: Most required skills",
+    yaxis = ax,
+    xaxis = list(title = 'Count'), barmode = 'stack',
+    bargap = 0.05
+    ) 
 ```
