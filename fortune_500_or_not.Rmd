@@ -6,6 +6,8 @@ output:
     toc_float: TRUE
 ---
 
+Exploration of the different expectations for candidates between Fortune 500 U.S. companies and Non-Fortune 500 U.S. companies
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, 
                       warning = F, 
@@ -82,7 +84,8 @@ datascience_OR %>%
 ```
 
 
-High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. “Other” means that the job descriptions do not contain information of degree, and this category falls more frequently in Non-fortune 500 corporations.
+High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 companies than non-fortune 500 companies. “Other” refers to the category where a job post does not contain information about degree in its job descriptions, and job posts from non-fortune 500 companies fall more frequently in this category.
+
 
 <br/>
 
@@ -152,7 +155,7 @@ bg_freq %>%
 ```
 
 
-Non-fortune 500 corporations mention Biostatistics, Engineer, Biology more frequently in their job posts, while employees with background in Computer Science and Mathemetics are more preferable to fortune 500 corporations.
+Non-fortune 500 companies mention Biostatistics, Engineer, Biology more frequently in their job posts, while candidates with background in Computer Science and Mathemetics are more preferable to fortune 500 companies.
 
 <br/>
 
@@ -216,7 +219,7 @@ tool_new %>%
         )
 ```
 
-Excel, followed by Tableau and SQL are more required by non-fortune 500 corporations, while fortune 500 corporations are more likely to prefer applicants with high-level programming tool, such as Perl, C/C++, and Java.
+Excel, followed by Tableau and SQL are more required by non-fortune 500 companies, while fortune 500 companies are more likely to prefer candidates with high-level programming tool, such as Perl, C/C++, and Java.
 
 
 <br/>
@@ -280,4 +283,4 @@ skill_new %>%
 
 ```
 
-Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 corporations, while data mining, machine learning, artificial intelligence, deep learning, and modeling are much more preferable to fortune 500 corporations. It makes sense that non-fortune 500 corporations just require employees to master general skills and elementary data science skills, while fortune 500 corporations desire their employees to master more advanced and professional data science skills.
+Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 companies, while data mining, machine learning, artificial intelligence, deep learning, and modeling are more preferable to fortune 500 companies. It makes sense that non-fortune 500 companies just require general skills and elementary analytical skills, while fortune 500 companies desire their candidates to master much more advanced and professional data science skills.
