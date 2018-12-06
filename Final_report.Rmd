@@ -117,7 +117,7 @@ The skills and toolset candidates can bring into the position are paramount at t
 
 Statistics, mathematics, computer science and quantitative take up almost two-thirds of the entire square panel. These words are at the heart root of this data science oriented field. However, the word “data science” does not appear as frequently as it might be supposed to be. Addiotionally, we also observe other enriched backgrounds like Biology, Economics and Physics. 
 
-![background odds ratio](report_pics/background_odds_ratio.jpg)
+![background odds ratio](report_pics/major_odds_ratio.jpeg)
 
 Fortune 500 companies prefer backgrounds with computer science and mathematics. Non-fortune 500 touched more on biostatistics, engineering and Biology. 
 
