@@ -70,7 +70,7 @@ tool_new %>%
   geom_col() +
   geom_text(aes(label = sum), hjust = -0.2, vjust = 0.4) +
   coord_flip() +
-  labs(y = "word count") +
+  labs(y = "Count") +
   theme(
     legend.position = "none",
     axis.title.y = element_blank())
@@ -204,7 +204,7 @@ skill_new %>%
          ) %>% 
   spread(key = flag, value = n) %>% 
   mutate(sum = non_top500 + top500) %>%
-  cbind(skills = c("Artifical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
+  cbind(skills = c("Artifiical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
   select(skills, 2, 3, 4) %>% 
   mutate(skills = fct_reorder(skills, sum)) %>% 
   plot_ly(.) %>% 
@@ -229,7 +229,7 @@ skill_new %>%
     flag = ifelse(flag == 1, "top500", "non_top500")
          ) %>% 
   spread(key = flag, value = n) %>% 
-  cbind(skills = c("Artifical Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
+  cbind(skills = c("Artificial Intelligence", "Data Manipulation & Analysis", "Data Mining", "Data Visualization", "Deep Learning", "Interpersonal Skills", "Machine Learning", "Modeling", "Optimization", "Writing Skills")) %>% 
   select(skills, 2, 3) %>% 
   mutate(
     non_top500_odds = (non_top500) / sum(datascience$flag == 0),
@@ -242,6 +242,7 @@ skill_new %>%
   geom_col() +
   coord_flip() +
   ylab("log odds ratio") +
-  scale_fill_discrete(name = "")
+  scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
+
 ```
 
