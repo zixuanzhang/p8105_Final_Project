@@ -21,11 +21,19 @@ The macroeconomic situation in data science industry embedded in background part
 
 The data from the Bureau of Labour Statistics were already well-formatted when we accessed them, so the tidying of these data was trivial. Before any analysis, we resolved the inconsistency of occupation titles between different files and ensured that all variables have been converted to reasonable classes.
 
-Indeed data was scraped and cleaned by Shanshan Lu from Indeed website available on Kaggle[1](https://www.kaggle.com/). This dataset contains 7,000 data scientist jobs around the U.S. on August 3rd, 2018. Main variables include `Company Name`, `Position Name`, `Location`, `Job Description`, and `Number of Reviews of the Company`. We mainly squared at the job description column that contains information such as a short description of company and position, requirement and route of application.
+Indeed data was scraped and cleaned by Shanshan Lu from Indeed website available on Kaggle[1](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv). This dataset contains 7,000 data scientist jobs around the U.S. on August 3rd, 2018. Main variables include `Company Name`, `Position Name`, `Location`, `Job Description`, and `Number of Reviews of the Company`. We mainly squared at the job description column that contains information such as a short description of company and position, requirement and route of application.
 
 Based on the ranking of total revenues of each company’s retrospective fiscal year, Fortune magazine's annual report of top 500 largest companies in the U.S has always been regarded as a reliable measurement for the value of a company [\[3\]](https://catalog.data.gov/dataset/fortune-500-corporate-headquarters). Many of the Fortune 500 companies now have a job title of Chief Data Scientist or Head of Analytics, and some Internet magnets have invested much in data mining, Artificial Intelligence or related areas.
 
 Given that differences of preference of these big-names and small companies may have for employees, we will combine the Fortune 500 company list and our Indeed dataset by company name. Through creating a new logical variable named `flag` to indicate whether each company falls into Fortune 500 companies category or not, this full dataset will be adopted for our Exploratory analysis.
+
+### Access Data
+
+Indeed data can be accessed from the dowloadable source on kaggle page of Shanshan Lu: <https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv>
+
+U.S. Bureau of Labour Statistics, 'Occupational Employment Statistics', 2018 data is available at: <https://www.bls.gov/oes/tables.htm> Go to this webpage and download **National** and **state** XLS format from May 2007 to May 2017.
+
+DATA.GOV, ‘Fortune 500’, 2018 is available at: <https://catalog.data.gov/dataset/fortune-500-corporate-headquarters>
 
 ### Data Cleaning
 
