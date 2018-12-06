@@ -1,6 +1,10 @@
 ---
-title: "text mining"
-output: html_document
+title: "Text Mining"
+output: 
+    html_document:
+      toc: true
+      toc_float: true
+
 ---
 
 ```{r setup, include=FALSE}
@@ -21,15 +25,14 @@ theme_set(theme_bw())
 
 ## Indeed Data
 
-Indeed data was scraped and cleaned by Shanshan Lu from Indeed website available on [Kaggle](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)). This dataset contains 7,000 data scientist jobs around the U.S. on August 3rd, 2018. Main variables include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company. We mainly squared at the job description column that contains information such as a short description of company and position, requirement and route of application.
+Indeed data is scraped and cleaned by Shanshan Lu from Indeed website available on [Kaggle](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)). This dataset contains 7,000 data scientist jobs around the U.S. on August 3rd, 2018. Main variables include company Name, position name, location, job description, and number of reviews of the company. We primarily focus on the job description column that contains information about a short description of company, job functions, requirement and route of application. We combine the list of top 500 largest companies selected by Fortune magazine based on the ranking of total revenue from another dataset, then use this dataset to explore our interests.
 
-Given that differences of preference of these "big-names" and small companies may have for employees, we will combine the Fortune 500 company list and our Indeed dataset by company name. Through creating a new logical variable named `flag` to indicate whether each company falls into Fortune 500 companies category or not, this full dataset will be adopted for our following analysis.
 
 ```{r echo=FALSE}
 indeed <- read_csv("./data/ds_500.csv")
 ```
 
-## Job qualifications 
+## Job Qualifications 
 
 #### which degree is prefered?
 
@@ -58,11 +61,11 @@ degree_summary <- indeed %>%
 degree_summary %>% mutate(total = `Fortune500` + `non-Fortune500`) %>% arrange(desc(total)) %>% knitr::kable()
 ```
 
-Bachelor, master and phd are most often observed in total word count. Since this is simply a raw count of degree word frequency, we can only conclude that a job applicant with bachelor degree can meet the degree requirement of most jobs but may not be the sufficient enough to get oneself into the position.
+Bachelor, master and phd are most often observed in total word count. Since this is simply a raw count of degree word frequency, we can only conclude that a job applicant with bachelor degree can meet the degree requirement of most positions but may not be sufficient enough to get one into the position.
 
 #### what kind of knowledge background is desired?
 
-The skills and toolset candidates mean to bring into the position are paramount at the consideration of recruiters. Based on prior knowledge, we predefined the fields as Statistics, Computer Science(including machine learning), Mathematics, Quantitative, Biology, Data Science, Economics, Physics, Biostatistics, MBA, and Chemical  Engineering. 
+The skills and toolset candidates are expected to bring into the position are paramount at the consideration of recruiters. Based on prior knowledge, we predefined the fields as Statistics, Computer Science(including machine learning), Mathematics, Quantitative, Biology, Data Science, Economics, Physics, Biostatistics, MBA, and Chemical  Engineering. 
 
 ```{r echo=FALSE}
 pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
@@ -110,7 +113,7 @@ bg_freq %>%
 
 Statistics, mathematics, computer science and quantitative take up almost two-thirds of the entire square panel. These words are at the root heart of this data science orientated field. However, the word “data science” does not appear as frequently as it might be supposed to be. 
 
-#### Which tools and skills are needed?
+#### which tools and skills are needed?
 
 ```{r echo=FALSE}
 tool_new = indeed %>% 
@@ -160,7 +163,7 @@ tool_new %>%
 ```
 
 
-The most required programming tool in job posts are Python, R, and SQL. Excel, followed by Tableau and SQL are more required by non-fortune 500 corporations, while fortune 500 corporations are more likely to prefer applicants with Perl, C/C++, and Java.
+The most required programming tool in job posts are Python, R, and SQL. Excel, followed by Tableau and SQL favored by non-fortune 500 corporations, while fortune 500 corporations prefer applicants with Perl, C/C++, and Java.
 
 
 ```{r echo=FALSE}
@@ -212,13 +215,13 @@ ggplot(data = dat.gg) +
 ```
 
 
-On the skill perspective, good interpersonal skills most frequently mentioned in all of the job posts, followed by skills of data manipulation & analysis, machine learning and modeling. Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 corporations, while data mining, machine learning, artificial intelligence, deep learning, and modeling are much more preferable by fortune 500 corporations.
+On the skill perspective, interpersonal skills are most frequently mentioned across job postings, followed by skills of data manipulation & analysis, machine learning and modeling. Non-fortune 500 put more weights on writing skills, data visualization, and data manipulation & analysis, while fortune 500 corporations emphasize data mining, machine learning, artificial intelligence, deep learning, and modeling.
 
-## Findings via text analysis
+## Findings via Text Analysis
 
 Given that we have nearly 7000 full job descriptions posted on Indeed by employers, we aspire to explore and visualize the most commonly used words across these descriptions. As we expected, degree requirements, related background, working ethics and culture in the company might show up at the top of the list. 
 
-We started with word count using window size two and displayed top 50 words below. The single word mining does not provide any informative message in its own right because of its lack of context. Our realizations will get more intriguing as we gradually leverage window size because words will start making sense when they become at least a phrase.
+We started with word counts using window size 2 and displayed top 50 words below. The single word mining does not provide any informative message in its own right because of its lack of context. Our realizations will get more intriguing as we gradually leverage window size because words will start making sense when they become at least a phrase.
 
 ```{r echo=FALSE}
 data(stop_words)
@@ -244,7 +247,7 @@ inspection_words %>%
   coord_flip()
 ```
 
-Here we see terms such as machine learning, data science, equal opportunity, computer science, and communication skills towards the end! These top 50 phrases generally can be categorized as software tools, interpersonal skills, and sociodemographic status information like gender identity and veterans status. 
+Here we see popular terms such as machine learning, data science, equal opportunity, computer science, and communication skills towards the end! These top 50 phrases generally can be categorized as software tools, interpersonal skills, and sociodemographic status information like gender identity and veterans status. 
 
 Then we display the result of windown size 3 since window size 4 realization does not adds additonal information.
 
