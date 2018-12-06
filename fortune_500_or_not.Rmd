@@ -72,8 +72,64 @@ datascience_OR %>%
 ```
 
 
-High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. Non-fortune 500 corporations tend to not mention requirements of degree.
+High school, master, bachelor, and Ph.D. degree are mentioned more frequently among fortune 500 corporations than non-fortune 500 corporations. “Other” means that the job descriptions do not contain information of degree, and this category falls more frequently in Non-fortune 500 corporations.
 
+<br/>
+
+### Related Background
+
+```{r, dpi = 300}
+pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
+                 "[Ss]tatistic", 
+                 "[Mm]ath", 
+                 "[Qq]uantitative", 
+                 "[Ee]conomic", 
+                 "[Bb]iolog", 
+                 "[Bb]iostatis", 
+                 "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+                 "[Cc]hemical [Ee]ngineering")
+name_bg = c("computer science", 
+          "statistics", 
+          "mathematics", 
+          "quantitative", 
+          "economics", 
+          "biology", 
+          "biostatistics", 
+          "data science", 
+          "engineer")
+
+bg_freq = data.frame(
+  background = pattern_bg, 
+  index = name_bg, 
+  freq_total = rep(0, length(pattern_bg)), 
+  top500 = rep(0, length(pattern_bg)), 
+  nontop500 = rep(0, length(pattern_bg)) 
+)
+
+for (i in c(1:length(pattern_bg))) {
+  bg_freq$freq_total[i] = sum(str_detect(datascience$description, as.character(bg_freq$background[i])))
+  bg_freq$top500[i] = sum(str_detect(datascience$description[which(datascience$flag == 1)], as.character(bg_freq$background[i])))
+  bg_freq$nontop500[i] = sum(str_detect(datascience$description[which(datascience$flag == 0)], as.character(bg_freq$background[i])))
+}
+
+# log odds ratio
+bg_freq %>% 
+  select(index, top500, nontop500) %>% 
+  mutate(
+    non_top500_odds = (nontop500) / sum(datascience$flag == 0),
+    top500_odds  = (top500) / sum(datascience$flag == 1),
+    log_OR = log(top500_odds / non_top500_odds)
+  ) %>% 
+  mutate(pos_log_OR = ifelse(log_OR > 0, "top500 > non500", "non500 > top500")) %>% 
+  mutate(index = fct_reorder(index, log_OR)) %>%
+  ggplot(aes(index, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab("log odds ratio") +
+  scale_fill_discrete(name = "")
+```
+
+<br/>
 
 ### Programming / Statistical Tools
 
@@ -128,6 +184,11 @@ tool_new %>%
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("top500 > non500" = "orange", "non500 > top500" = "black"))
 ```
+
+Excel, followed by Tableau and SQL are more required by non-fortune 500 corporations, while fortune 500 corporations are more likely to prefer applicants with high-level programming tool, such as Perl, C/C++, and Java.
+
+
+<br/>
 
 ### Rquired Skills 
 
@@ -184,3 +245,4 @@ skill_new %>%
 
 ```
 
+Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 corporations, while data mining, machine learning, artificial intelligence, deep learning, and modeling are much more preferable to fortune 500 corporations. It makes sense that non-fortune 500 corporations just require employees to master general skills and elementary data science skills, while fortune 500 corporations desire their employees to master more advanced data science skills.
