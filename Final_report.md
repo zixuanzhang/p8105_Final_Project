@@ -33,7 +33,7 @@ Indeed data can be accessed from the dowloadable source on kaggle page of Shansh
 
 U.S. Bureau of Labour Statistics, 'Occupational Employment Statistics', 2018 data is available at: <https://www.bls.gov/oes/tables.htm> Go to this webpage and download **National** and **state** XLS format from May 2007 to May 2017.
 
-DATA.GOV, ‘Fortune 500’, 2018 is available at: <https://catalog.data.gov/dataset/fortune-500-corporate-headquarters>
+DATA.GOV, ‘Fortune 500’, 2018 is available at: <https://hifld-geoplatform.opendata.arcgis.com/datasets/fortune-500-corporate-headquarters> and click on download
 
 ### Data Cleaning
 
@@ -174,4 +174,4 @@ Reference
 
 \[2\] U.S. Bureau of Labour Statistics, ‘Occupational Employment Statistics’, 2018, \[Online\]. Available: <https://www.bls.gov/oes/tables.htm>. \[Accessed: 09-Nov-2018\]
 
-\[3\] DATA.GOV, ‘Fortune 500’, 2018, \[Online\]. Available: <https://catalog.data.gov/dataset/fortune-500-corporate-headquarters>. \[Accessed: 13-Nov-2018\]
+\[3\] DATA.GOV, ‘Fortune 500’, 2018, \[Online\]. Available: <https://hifld-geoplatform.opendata.arcgis.com/datasets/fortune-500-corporate-headquarters>. \[Accessed: 13-Nov-2018\]
