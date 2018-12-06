@@ -136,7 +136,7 @@ bg_freq %>%
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "firebrick3", "Non-fortune 500 > Fortune 500" = "black"))
 ```
 
-Employees with background in Computer Science and Mathemetics are more preferable to fortune 500 corporations, while non-fortune 500 corporations mention Biostatistics, Engineer, Biology more in their job posts.
+Non-fortune 500 corporations mention Biostatistics, Engineer, Biology more frequently in their job posts, while employees with background in Computer Science and Mathemetics are more preferable to fortune 500 corporations.
 
 <br/>
 
@@ -190,6 +190,7 @@ tool_new %>%
   ggplot(aes(tool, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
+  xlab("Tool") +
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "orange", "Non-fortune 500 > Fortune 500" = "black"))
 ```
@@ -249,6 +250,7 @@ skill_new %>%
   ggplot(aes(skills, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
+  xlab("Skills") +
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "springgreen4", "Non-fortune 500 > Fortune 500" = "black"))
 

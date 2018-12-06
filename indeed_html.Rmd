@@ -1,0 +1,268 @@
+---
+title: "text mining"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, 
+                      message = F)
+library(tidyverse)
+library(readr)
+library(rvest)
+library(stringr)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(treemap)
+library(plotly)
+library(packcircles) # bubble plot
+theme_set(theme_bw())
+```
+
+## Indeed Data
+
+Indeed data was scraped and cleaned by Shanshan Lu from Indeed website available on [Kaggle](https://www.kaggle.com/sl6149/data-scientist-job-market-in-the-us#alldata.csv)). This dataset contains 7,000 data scientist jobs around the U.S. on August 3rd, 2018. Main variables include Company Name, Position Name, Location, Job Description, and Number of Reviews of the Company. We mainly squared at the job description column that contains information such as a short description of company and position, requirement and route of application.
+
+Given that differences of preference of these "big-names" and small companies may have for employees, we will combine the Fortune 500 company list and our Indeed dataset by company name. Through creating a new logical variable named `flag` to indicate whether each company falls into Fortune 500 companies category or not, this full dataset will be adopted for our following analysis.
+
+```{r echo=FALSE}
+indeed <- read_csv("./data/ds_500.csv")
+```
+
+## Job qualifications 
+
+#### which degree is prefered?
+
+```{r echo=FALSE}
+pattern_hi = "[Hh]igh [Ss]chool"
+pattern_ba = "[Bb]achelor | \\bB\\.?A\\b | \\bB\\.?S\\b | [Cc]ollege | [Dd]egree"
+pattern_ma = "[Mm]aster[^y] | [Aa]dvanced | \\bM\\.?[SA]\\b | [Gg]raduate"
+pattern_phd = "\\b[Pp][Hh]\\.?[Dd]\\b | \\bM\\.?D\\b | \\b[Dd]octoral\\b"
+
+degree_summary <- indeed %>% 
+  mutate(high_school = ifelse(str_detect(.$description, pattern_hi) == TRUE, 1, 0),
+         bachelor = ifelse(str_detect(.$description, pattern_ba) == TRUE, 1, 0),
+         master = ifelse(str_detect(.$description, pattern_ma) == TRUE, 1, 0), 
+         phd = ifelse(str_detect(.$description, pattern_phd) == TRUE, 1, 0), 
+         other = high_school + bachelor + master + phd) %>% 
+  # if other == 0, means non degree has been found
+  mutate(flag = ifelse(flag == 1, "Fortune500", "non-Fortune500"), 
+         flag = as.factor(flag), 
+         other = ifelse(other == 0, 1, 0)) %>% # if other == 0, means non degree has been found
+  gather(key = degree, value = indicator, high_school:other) %>% 
+  count(flag, degree, indicator != 0) %>% 
+  filter(`indicator != 0` == "TRUE") %>% 
+  select(-`indicator != 0`) %>% 
+  spread(key = flag, value = n)
+
+degree_summary %>% mutate(total = `Fortune500` + `non-Fortune500`) %>% arrange(desc(total)) %>% knitr::kable()
+```
+
+Bachelor, master and phd are most often observed in total word count. Since this is simply a raw count of degree word frequency, we can only conclude that a job applicant with bachelor degree can meet the degree requirement of most jobs but may not be the sufficient enough to get oneself into the position.
+
+#### what kind of knowledge background is desired?
+
+The skills and toolset candidates mean to bring into the position are paramount at the consideration of recruiters. Based on prior knowledge, we predefined the fields as Statistics, Computer Science(including machine learning), Mathematics, Quantitative, Biology, Data Science, Economics, Physics, Biostatistics, MBA, and Chemical  Engineering. 
+
+```{r echo=FALSE}
+pattern_bg = c("[Cc]omputer [Ss]cience | \\bC\\.?S\\b | [Mm]achine [Ll]earning | \\bM\\.?L\\b", 
+               "[Ss]tatistic", 
+               "[Mm]ath", 
+               "[Qq]uantitative", 
+               "[Ee]conomic", 
+               "[Bb]iolog", 
+               "[Bb]iostatis", 
+               "[Dd]ata [Ss]cience | \\bD\\.?S\\b", 
+               "[Cc]hemical [Ee]ngineering", 
+               "[Pp]hysics", 
+               "\\bMB\\.?A\\b")
+
+name_bg = c("Computer Science", 
+          "Statistics", 
+          "Mathematics", 
+          "Quantitative", 
+          "Economics", 
+          "Biology", 
+          "Biostatistics", 
+          "Data Science", 
+          "Chemical Engineer", 
+          "Physics", 
+          "MBA")
+
+bg_freq = data.frame(
+  background = pattern_bg, 
+  index = name_bg, 
+  freq = rep(0, length(pattern_bg))
+)
+
+
+for (i in c(1:length(pattern_bg))) {
+  bg_freq$freq[i] = sum(str_detect(indeed$description, as.character(bg_freq$background[i])))
+}
+
+bg_freq %>% 
+  treemap(index = "index", 
+          vSize = "freq", 
+          type = "index",
+          palette = "Blues",
+          title = "related background treemap")
+```
+
+Statistics, mathematics, computer science and quantitative take up almost two-thirds of the entire square panel. These words are at the root heart of this data science orientated field. However, the word “data science” does not appear as frequently as it might be supposed to be. 
+
+#### Which tools and skills are needed?
+
+```{r echo=FALSE}
+tool_new = indeed %>% 
+  mutate(
+    python = ifelse(str_detect(.$description,  c("\\b[Pp][Yy][Tt][Hh][Oo][Nn]\\b")) == TRUE, 1, 0),
+    excel = ifelse(str_detect(.$description,  c("\\b[Ee][Xx][Cc][Ee][Ll]\\b")) == TRUE, 1, 0),
+    r = ifelse(str_detect(.$description,  c("\\b[Rr]\\b")) == TRUE, 1, 0),
+    sql = ifelse(str_detect(.$description,  c("\\b[Ss][Qq][Ll]\\b")) == TRUE, 1, 0),
+    java = ifelse(str_detect(.$description,  c("\\b[Jj][Aa][Vv][Aa]\\b")) == TRUE, 1, 0),
+    tableau = ifelse(str_detect(.$description,  c("\\b[Tt][Aa][Bb][Ll][Ee][Aa][Uu]\\b")) == TRUE, 1, 0),
+    sas = ifelse(str_detect(.$description,  c("\\b[Ss][Aa][Ss]\\b")) == TRUE, 1, 0),
+    matlab =  ifelse(str_detect(.$description,  c("\\b[Mm][Aa][Tt][Ll][Aa][Bb]\\b")) == TRUE, 1, 0),
+    c = ifelse(str_detect(.$description,  c("\\b[Cc]\\b")) == TRUE, 1, 0),
+    perl = ifelse(str_detect(.$description,  c("\\b[Pp][Ee][Rr][Ll]\\b")) == TRUE, 1, 0), 
+    scala = ifelse(str_detect(.$description,  c("\\b[Ss][Cc][Aa][Ll][Aa]\\b")) == TRUE, 1, 0), 
+    spark = ifelse(str_detect(.$description,  c("\\b[Ss][Pp][Aa][Rr][Kk]\\b")) == TRUE, 1, 0), 
+    hadoop = ifelse(str_detect(.$description,  c("\\b[Hh][Aa][Dd][Oo][Oo][Pp]\\b")) == TRUE, 1, 0), 
+    aws = ifelse(str_detect(.$description,  c("\\b[Aa][Ww][Ss]\\b")) == TRUE, 1, 0),
+    hive = ifelse(str_detect(.$description,  c("\\b[Hh][Ii][Vv][Ee]\\b")) == TRUE, 1, 0),
+    tensorflow = ifelse(str_detect(.$description,  c("\\b[Tt][Ee][Nn][Ss][Oo][Rr][Ff][Ll][Oo][Ww]\\b")) == TRUE, 1, 0),
+    linux = ifelse(str_detect(.$description,  c("\\b[Ll][Ii][Nn][Uu][Xx]\\b")) == TRUE, 1, 0)
+    )
+
+tool_new %>% 
+  select(python:linux) %>% 
+  # sum of each column
+  colSums(., na.rm = TRUE) %>% 
+  as.tibble() %>% 
+  # extract the row names (tool names) and set them as the value of first column
+  cbind(tool = row.names(.), .) %>% 
+  # clean the original row names
+  `row.names<-.default`(1:17) %>% 
+  rename(sum = value) %>% 
+  mutate(
+    tool = str_to_title(tool),
+    tool = recode(tool, "C" = "C/C++", "Sql" = "SQL", "Sas" = "SAS", "Aws" = "AWS")
+         ) %>% 
+  mutate(tool = fct_reorder(tool, sum)) %>% 
+  ggplot(aes(x = tool, y = sum, fill = tool)) +
+  geom_col() +
+  geom_text(aes(label = sum), hjust = -0.2, vjust = 0.4) +
+  coord_flip() +
+  labs(y = "word count", title = "Programming/Statistical Tools") +
+  theme(
+    legend.position = "none",
+    axis.title.y = element_blank())
+```
+
+
+The most required programming tool in job posts are Python, R, and SQL. Excel, followed by Tableau and SQL are more required by non-fortune 500 corporations, while fortune 500 corporations are more likely to prefer applicants with Perl, C/C++, and Java.
+
+
+```{r echo=FALSE}
+skill_new = indeed %>%
+  mutate(
+    machine_learning = ifelse(str_detect(.$description,  c("[Mm]achine [Ll]earning")) == TRUE, 1, 0),
+    deep_learning = ifelse(str_detect(.$description,  c("[Dd]eep [Ll]earning")) == TRUE, 1, 0),
+    # Data Manipulation & Analysis
+    data_mani_ana = ifelse(str_detect(.$description,  c("[Dd]ata [Aa]nalysis|[Dd]ata [Mm]anipulation|[Dd]ata [Mm]anagement|[Dd]ata [Ee]valuation|[Ss]tatistical [Aa]nalysis|[Rr]egression")) == TRUE, 1, 0),
+    # data visualization
+    data_visul = ifelse(str_detect(.$description,  c("[Dd]ata [Vv]isualization")) == TRUE, 1, 0),
+    data_mining = ifelse(str_detect(.$description,  c("[Dd]ata [Mm]ining")) == TRUE, 1, 0),
+    modeling = ifelse(str_detect(.$description,  c("[Mm]odeling")) == TRUE, 1, 0),
+    # include machine learning optimization, data optimization, mathematical optimization???
+    optimization = ifelse(str_detect(.$description,  c("[Oo]ptimization")) == TRUE, 1, 0),
+    # interpersonal skills
+    interpersonal = ifelse(str_detect(.$description,  c("[Ii]nterpersonal [Ss]kill|[Cc]ommunication|[Ll]istening [Ss]kill|[Tt]eam [Ww]orking|[Nn]egotiation|[Ee]motional [Ii]ntelligence|[Cc]onflict [Rr]esolution|[Pp]roblem [Ss]olving|[Dd]ecision [Mm]aking")) == TRUE, 1, 0),
+    # artifical intelligence
+    arti_inte = ifelse(str_detect(.$description,  c("\\bAI\\b|[Nn]eural [Nn]etwork")) == TRUE, 1, 0),
+    writing = ifelse(str_detect(.$description,  c("[Ww]riting")) == TRUE, 1, 0)
+  )
+
+skill_bubble = skill_new %>% 
+  select(machine_learning:writing) %>% 
+  # sum of each column
+  colSums(., na.rm = TRUE) %>% 
+  as.tibble() %>% 
+  cbind(skills = c("Machine Learning", "Deep Learning", "Data Manipulation & Analysis", "Data Visualization", "Data Mining", "Modeling", "Optimization", "Interpersonal Skills", "Artificial Intelligence", "Writing Skills"), .$value) %>% 
+  select(skills, sum = value) %>% 
+  `row.names<-.default`(1:10) %>% 
+  mutate(skills = fct_reorder(skills, sum))
+  
+# use packege`packcircles` to make bubble plot
+packing <- circleProgressiveLayout(skill_bubble$sum)
+dat.gg <- circleLayoutVertices(packing)
+
+plot_df <- cbind(skill_bubble, packing) 
+
+plot_df$text2 <- paste0(plot_df$skills,"\n",plot_df$sum)
+
+ggplot(data = dat.gg) +
+  geom_polygon(aes(x, y, group = id, fill =  id), show.legend = FALSE) +
+  scale_y_reverse() +
+  coord_equal() +
+  geom_text(data = plot_df, aes(x, y,label = text2)) +
+  scale_fill_distiller(palette = "RdYlBu") +
+  coord_flip() +
+  theme_void()
+```
+
+
+On the skill perspective, good interpersonal skills most frequently mentioned in all of the job posts, followed by skills of data manipulation & analysis, machine learning and modeling. Writing skills, followed by data visualization, and data manipulation & analysis are more required by non-fortune 500 corporations, while data mining, machine learning, artificial intelligence, deep learning, and modeling are much more preferable by fortune 500 corporations.
+
+## Findings via text analysis
+
+Given that we have nearly 7000 full job descriptions posted on Indeed by employers, we aspire to explore and visualize the most commonly used words across these descriptions. As we expected, degree requirements, related background, working ethics and culture in the company might show up at the top of the list. 
+
+We started with word count using window size two and displayed top 50 words below. The single word mining does not provide any informative message in its own right because of its lack of context. Our realizations will get more intriguing as we gradually leverage window size because words will start making sense when they become at least a phrase.
+
+```{r echo=FALSE}
+data(stop_words)
+keep_letter_stop_words <- stop_words %>% filter(!word %in% c("C", "c", "R", "r"))
+
+inspection_words = 
+  indeed %>% 
+  unnest_tokens(word, description) %>% 
+  anti_join(x = ., keep_letter_stop_words)
+
+inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 2) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  labs(y = "double world frequency") +
+  coord_flip()
+```
+
+Here we see terms such as machine learning, data science, equal opportunity, computer science, and communication skills towards the end! These top 50 phrases generally can be categorized as software tools, interpersonal skills, and sociodemographic status information like gender identity and veterans status. 
+
+Then we display the result of windown size 3 since window size 4 realization does not adds additonal information.
+
+```{r echo=FALSE}
+inspection_words %>%
+  nest(word) %>%
+  mutate(text = map(data, unlist), 
+         text = map_chr(text, paste, collapse = " ")) %>% 
+  select(-data) %>% 
+  unnest_tokens(word, text, token = "ngrams", n = 3) %>% 
+  count(word, sort = TRUE) %>% 
+  top_n(50) %>% 
+  mutate(word = fct_reorder(word, n)) %>% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = "identity", fill = "blue", alpha = .6) + 
+  labs(y = "triple world frequency") +
+  coord_flip()
+```
+
+Most of the information standing out here is about sexual orientation, gender identity, and equal employment. The most frequent phrases are not related technical skills or any qualifications, but statements of equal opportunity employers, sexual orientation, race and religion. We also see phrases like computer science degree, machine learning techniques. From here we conclude that companies take equal consideration of candidates seriously in addition to the applicants’ qualified backgrounds.
+
