@@ -75,6 +75,7 @@ datascience_OR %>%
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "steelblue", "Non-fortune 500 > Fortune 500" = "black")) +
   theme(
+    axis.title.y = element_text(size = 12),
     axis.text.y = element_text(size = 15),
     legend.text = element_text(size = 12)
         )
@@ -144,6 +145,7 @@ bg_freq %>%
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "firebrick3", "Non-fortune 500 > Fortune 500" = "black")) +
   theme(
+    axis.title.y = element_text(size = 12),
     axis.text.y = element_text(size = 15),
     legend.text = element_text(size = 12)
         )
@@ -208,6 +210,7 @@ tool_new %>%
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "orange", "Non-fortune 500 > Fortune 500" = "black")) +
   theme(
+    axis.title.y = element_text(size = 12),
     axis.text.y = element_text(size = 15),
     legend.text = element_text(size = 12)
         )
@@ -270,6 +273,7 @@ skill_new %>%
   ylab("log odds ratio") +
   scale_fill_manual("", values = c("Fortune 500 > Non-fortune 500" = "springgreen4", "Non-fortune 500 > Fortune 500" = "black")) +
   theme(
+    axis.title.y = element_text(size = 12),
     axis.text.y = element_text(size = 15),
     legend.text = element_text(size = 12)
     )
